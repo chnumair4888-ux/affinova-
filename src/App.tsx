@@ -39,6 +39,13 @@ function guideImage(g:Guide,index:number){
 function Header({query,setQuery,products,categories,savedCount,compareCount}:{query:string;setQuery:(v:string)=>void;products:Product[];categories:Category[];savedCount:number;compareCount:number}){
  const [menu,setMenu]=useState(false);
  const [focus,setFocus]=useState(false);
+ const [history,setHistory]=useState<string[]>([]);
+ useEffect(()=>{try{setHistory(JSON.parse(localStorage.getItem("affinova_search_history")||"[]"))}catch{}},[]);
+ const saveSearch=(value:string)=>{
+  const v=value.trim(); if(!v)return;
+  setHistory(prev=>{const next=[v,...prev.filter(x=>x.toLowerCase()!==v.toLowerCase())].slice(0,8);localStorage.setItem("affinova_search_history",JSON.stringify(next));return next});
+ };
+ const clearHistory=()=>{localStorage.removeItem("affinova_search_history");setHistory([])};
  const suggestions=useMemo(()=>{
   const q=query.trim().toLowerCase();
   if(!q)return [];
@@ -48,56 +55,31 @@ function Header({query,setQuery,products,categories,savedCount,compareCount}:{qu
    return haystack.includes(q);
   }).slice(0,6);
  },[query,products,categories]);
-
  const submit=(e:React.FormEvent)=>{
   e.preventDefault();
+  if(query.trim())saveSearch(query);
   setFocus(false);
   document.getElementById("products")?.scrollIntoView({behavior:"smooth"});
  };
-
- return (
-  <>
-   <div className="top-strip">CURATED FINDS • SMART PICKS • BETTER VALUE <span>New products added regularly</span></div>
-   <header className="header">
-    <div className="container nav">
-     <button className="menu" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button>
-     <a className="brand" href="/"><span className="mark">A</span><span>Affinova</span></a>
-     <nav className={menu?"links open":"links"}>
-      <a href="/#products" onClick={()=>setMenu(false)}>Shop</a>
-      <a href="/#categories" onClick={()=>setMenu(false)}>Categories</a>
-      <a href="/#deals" onClick={()=>setMenu(false)}>Deals</a>
-      <a href="/#guides" onClick={()=>setMenu(false)}>Guides</a>
-      <a href="/about" onClick={()=>setMenu(false)}>About</a>
-      {savedCount>0&&<a href="#saved" onClick={()=>setMenu(false)}>Saved ({savedCount})</a>}
-      {compareCount>0&&<a href="#compare" onClick={()=>setMenu(false)}>Compare ({compareCount})</a>}
-     </nav>
-     <form className="search-wrap" onSubmit={submit}>
-      <div className="search">
-       <Search size={17}/>
-       <input value={query} onFocus={()=>setFocus(true)} onChange={e=>setQuery(e.target.value)} placeholder="Search gadgets, toys, kitchen..."/>
-      </div>
-      {focus&&query.trim()&&(
-       <div className="search-results">
-        {suggestions.length>0 ? suggestions.map(p=>{
-         const c=categories.find(x=>x.id===p.category_id);
-         const img=productImage(p);
-         return (
-          <a className="search-result" key={p.id} href={"/product/"+p.slug} onClick={()=>setFocus(false)}>
-           <div className="search-thumb">{img?<img src={img} alt=""/>:<span>{p.title.slice(0,1)}</span>}</div>
-           <div>
-            <strong>{p.title}</strong>
-            <small>{p.brand||c?.name||"Affinova pick"}{p.tags?.length?" • "+p.tags.slice(0,3).join(", "):""}</small>
-           </div>
-          </a>
-         );
-        }) : <div className="search-empty">No matching product yet.</div>}
-       </div>
-      )}
-     </form>
-    </div>
-   </header>
-  </>
- );
+ return <>
+  <div className="top-strip">CURATED FINDS • SMART PICKS • BETTER VALUE <span>New products added regularly</span></div>
+  <header className="header">
+   <div className="container nav">
+    <button className="menu" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button>
+    <a className="brand" href="/"><span className="mark">A</span><span>Affinova</span></a>
+    <nav className={menu?"links open":"links"}>
+     <a href="/#products" onClick={()=>setMenu(false)}>Shop</a><a href="/#categories" onClick={()=>setMenu(false)}>Categories</a><a href="/#deals" onClick={()=>setMenu(false)}>Deals</a><a href="/#guides" onClick={()=>setMenu(false)}>Guides</a><a href="/about" onClick={()=>setMenu(false)}>About</a>
+     {savedCount>0&&<a href="#saved" onClick={()=>setMenu(false)}>Saved ({savedCount})</a>}{compareCount>0&&<a href="#compare" onClick={()=>setMenu(false)}>Compare ({compareCount})</a>}
+    </nav>
+    <form className="search-wrap" onSubmit={submit}>
+     <div className="search"><Search size={17}/><input value={query} onFocus={()=>setFocus(true)} onChange={e=>setQuery(e.target.value)} placeholder="Search gadgets, toys, kitchen..."/></div>
+     {focus&&<div className="search-results">
+      {!query.trim() ? <>{history.length>0?<><div className="search-history-head"><strong>Recent searches</strong><button type="button" onClick={clearHistory}>Clear</button></div>{history.map(h=><button type="button" className="search-history-item" key={h} onClick={()=>{setQuery(h);saveSearch(h);setFocus(false);document.getElementById("products")?.scrollIntoView({behavior:"smooth"})}}><span>↗</span>{h}</button>)}</>:<div className="search-empty">Your recent searches will appear here.</div>}</> : suggestions.length>0 ? suggestions.map(p=>{const c=categories.find(x=>x.id===p.category_id);const img=productImage(p);return <a className="search-result" key={p.id} href={"/product/"+p.slug} onClick={()=>{saveSearch(query);setFocus(false)}}><div className="search-thumb">{img?<img src={img} alt=""/>:<span>{p.title.slice(0,1)}</span>}</div><div><strong>{p.title}</strong><small>{p.brand||c?.name||"Affinova pick"}{p.tags?.length?" • "+p.tags.slice(0,3).join(", "):""}</small></div></a>}) : <div className="search-empty">No matching product yet.</div>}
+     </div>}
+    </form>
+   </div>
+  </header>
+ </>;
 }
 function Card({p,saved,onSave,compared,onCompare}:{p:Product;saved:boolean;onSave:()=>void;compared:boolean;onCompare:()=>void}){
  const img=productImage(p);
