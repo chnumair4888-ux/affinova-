@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect,useRef,useState} from "react";
 
 type AdSlotProps={slot?:string;className?:string};
 
@@ -28,12 +28,20 @@ export default function AdSlot({slot,className=""}:AdSlotProps){
   useEffect(()=>{
     if(!client||!slot)return;
     let cancelled=false;
+    const node=ref.current;
+    const observer=node?new MutationObserver(()=>{
+      const status=node.getAttribute("data-ad-status");
+      if(status==="filled"){setFilled(true);observer.disconnect()}
+      if(status==="unfilled"){setFilled(false);observer.disconnect()}
+    }):null;
+    observer?.observe(node!,{attributes:true,attributeFilter:["data-ad-status"]});
     loadAdSense(client).then(()=>{
       if(cancelled)return;
       try{((window as any).adsbygoogle=(window as any).adsbygoogle||[]).push({})}catch{}
     }).catch(()=>{});
+    return()=>{cancelled=true;observer?.disconnect()};
     return()=>{cancelled=true};
   },[client,slot]);
   if(!client||!slot)return null;
-  return <ins className={"adsbygoogle affinova-ad "+className} style={{display:"block"}} data-ad-client={client} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="true"/>;
+  return <ins ref={ref} className={"adsbygoogle affinova-ad "+className+(filled?" ad-ready":"")} style={{display:"block"}} data-ad-client={client} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="true"/>;
 }
