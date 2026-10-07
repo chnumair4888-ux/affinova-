@@ -25,7 +25,7 @@ function loadAdSense(client:string){
 
 export default function AdSlot({slot,className=""}:AdSlotProps){
   const client=import.meta.env.VITE_ADSENSE_CLIENT as string|undefined;
-  const ref=useRef<HTMLElement|null>(null);
+  const ref=useRef<HTMLModElement|null>(null);
   const [filled,setFilled]=useState(false);
 
   useEffect(()=>{
