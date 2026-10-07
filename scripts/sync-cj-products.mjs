@@ -1,7 +1,6 @@
 const CJ_ENDPOINT = "https://ads.api.cj.com/query";
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://vrebunefcbcqfmllxsdm.supabase.co";
 const CJ_CID = process.env.CJ_CID || "8093374";
-const CJ_PID = process.env.CJ_PID || "101893390";
 const CJ_TOKEN = process.env.CJ_API_TOKEN;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -123,7 +122,6 @@ async function fetchProducts(keyword = null) {
         lastUpdated
         targetCountry
         serviceableAreas
-        linkCode(pid: "${CJ_PID}") { clickUrl imageUrl }
       }
     }
   }`;
@@ -141,7 +139,7 @@ async function upsertProducts(products, categories) {
     const price = Number(amount);
     if (!p.title || !Number.isFinite(price) || price < 0) continue;
 
-    const affiliateUrl = p.linkCode?.clickUrl || p.link || null;
+    const affiliateUrl = p.link || null;
     const categoryId = pickCategory(p, categories);
     const tags = [
       ...(p.productType || []),
@@ -161,7 +159,7 @@ async function upsertProducts(products, categories) {
       currency: String(currency).toUpperCase(),
       rating: 0,
       review_count: 0,
-      image_url: p.linkCode?.imageUrl || p.imageLink || p.additionalImageLink?.[0] || null,
+      image_url: p.imageLink || p.additionalImageLink?.[0] || null,
       affiliate_url: affiliateUrl,
       brand: p.brand || p.advertiserName || null,
       category_id: categoryId,
