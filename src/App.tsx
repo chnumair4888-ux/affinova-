@@ -37,19 +37,68 @@ function guideImage(g:Guide,index:number){
 }
 
 function Header({query,setQuery,products,categories,savedCount,compareCount}:{query:string;setQuery:(v:string)=>void;products:Product[];categories:Category[];savedCount:number;compareCount:number}){
- const [menu,setMenu]=useState(false),[focus,setFocus]=useState(false);
+ const [menu,setMenu]=useState(false);
+ const [focus,setFocus]=useState(false);
  const suggestions=useMemo(()=>{
   const q=query.trim().toLowerCase();
   if(!q)return [];
   return products.filter(p=>{
    const c=categories.find(x=>x.id===p.category_id);
-   return (p.title+" "+(p.brand||"")+" "+(p.short_description||"")+" "+(p.tags||[]).join(" ")+" "+(c?.name||"")).toLowerCase().includes(q);
+   const haystack=[p.title,p.brand||"",p.short_description||"",...(p.tags||[]),c?.name||""].join(" ").toLowerCase();
+   return haystack.includes(q);
   }).slice(0,6);
  },[query,products,categories]);
- const submit=(e:React.FormEvent)=>{e.preventDefault();setFocus(false);document.getElementById("products")?.scrollIntoView({behavior:"smooth"})};
- return <><div className="top-strip">CURATED FINDS • SMART PICKS • BETTER VALUE <span>New products added regularly</span></div><header className="header"><div className="container nav"><button className="menu" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button><a className="brand" href="/"><span className="mark">A</span><span>Affinova</span></a><nav className={menu?"links open":"links"}><a href="/#products" onClick={()=>setMenu(false)}>Shop</a><a href="/#categories" onClick={()=>setMenu(false)}>Categories</a><a href="/#deals" onClick={()=>setMenu(false)}>Deals</a><a href="/#guides" onClick={()=>setMenu(false)}>Guides</a><a href="/about" onClick={()=>setMenu(false)}>About</a>{savedCount>0&&<a href="#saved" onClick={()=>setMenu(false)}>Saved ({savedCount})</a>}{compareCount>0&&<a href="#compare" onClick={()=>setMenu(false)}>Compare ({compareCount})}</nav><form className="search-wrap" onSubmit={submit}><div className="search"><Search size={17}/><input value={query} onFocus={()=>setFocus(true)} onChange={e=>setQuery(e.target.value)} placeholder="Search gadgets, toys, kitchen..."/></div>{focus&&query.trim()&&<div className="search-results">{suggestions.length?suggestions.map(p=>{const c=categories.find(x=>x.id===p.category_id);return <a className="search-result" key={p.id} href={"/product/"+p.slug} onClick={()=>setFocus(false)}><div className="search-thumb">{productImage(p)?<img src={productImage(p)} alt=""/>:<span>{p.title.slice(0,1)}</span>}</div><div><strong>{p.title}</strong><small>{p.brand||c?.name||"Affinova pick"}{p.tags?.length?" • "+p.tags.slice(0,3).join(", "):""}</small></div></a>}):<div className="search-empty">No matching product yet.</div>}</div>}</form></div></header></>;
-}
 
+ const submit=(e:React.FormEvent)=>{
+  e.preventDefault();
+  setFocus(false);
+  document.getElementById("products")?.scrollIntoView({behavior:"smooth"});
+ };
+
+ return (
+  <>
+   <div className="top-strip">CURATED FINDS • SMART PICKS • BETTER VALUE <span>New products added regularly</span></div>
+   <header className="header">
+    <div className="container nav">
+     <button className="menu" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button>
+     <a className="brand" href="/"><span className="mark">A</span><span>Affinova</span></a>
+     <nav className={menu?"links open":"links"}>
+      <a href="/#products" onClick={()=>setMenu(false)}>Shop</a>
+      <a href="/#categories" onClick={()=>setMenu(false)}>Categories</a>
+      <a href="/#deals" onClick={()=>setMenu(false)}>Deals</a>
+      <a href="/#guides" onClick={()=>setMenu(false)}>Guides</a>
+      <a href="/about" onClick={()=>setMenu(false)}>About</a>
+      {savedCount>0&&<a href="#saved" onClick={()=>setMenu(false)}>Saved ({savedCount})</a>}
+      {compareCount>0&&<a href="#compare" onClick={()=>setMenu(false)}>Compare ({compareCount})</a>}
+     </nav>
+     <form className="search-wrap" onSubmit={submit}>
+      <div className="search">
+       <Search size={17}/>
+       <input value={query} onFocus={()=>setFocus(true)} onChange={e=>setQuery(e.target.value)} placeholder="Search gadgets, toys, kitchen..."/>
+      </div>
+      {focus&&query.trim()&&(
+       <div className="search-results">
+        {suggestions.length>0 ? suggestions.map(p=>{
+         const c=categories.find(x=>x.id===p.category_id);
+         const img=productImage(p);
+         return (
+          <a className="search-result" key={p.id} href={"/product/"+p.slug} onClick={()=>setFocus(false)}>
+           <div className="search-thumb">{img?<img src={img} alt=""/>:<span>{p.title.slice(0,1)}</span>}</div>
+           <div>
+            <strong>{p.title}</strong>
+            <small>{p.brand||c?.name||"Affinova pick"}{p.tags?.length?" • "+p.tags.slice(0,3).join(", "):""}</small>
+           </div>
+          </a>
+         );
+        }) : <div className="search-empty">No matching product yet.</div>}
+       </div>
+      )}
+     </form>
+    </div>
+   </header>
+  </>
+ );
+}
 function Card({p,saved,onSave,compared,onCompare}:{p:Product;saved:boolean;onSave:()=>void;compared:boolean;onCompare:()=>void}){
  const img=productImage(p);
  return <article className="card"><a className="pic" href={"/product/"+p.slug}>{img?<img src={img} alt={p.title}/>:<div className="product-placeholder"><span>{p.category_id?"AFFINOVA":"SMART FIND"}</span><b>{p.title.slice(0,1)}</b></div>}{p.is_deal&&<span className="badge"><Tag size={12}/> Deal</span>}</a><div className="card-body"><div className="rating">★ {Number(p.rating||0).toFixed(1)} <span>({p.review_count||0})</span></div><a className="title" href={"/product/"+p.slug}>{p.title}</a><div className="price"><strong>{money(Number(p.price),p.currency)}</strong>{p.original_price&&<><del>{money(Number(p.original_price),p.currency)}</del><span>-{p.discount_percentage}%</span></>}</div><div className="actions">{p.affiliate_url?<a className="btn dark" href={p.affiliate_url} target="_blank" rel="nofollow sponsored noopener">View deal <ExternalLink size={14}/></a>:<a className="btn dark" href={"/product/"+p.slug}>View details <ArrowRight size={14}/></a>}<button className={"heart"+(saved?" saved":"")} aria-label={saved?"Remove from saved":"Save product"} onClick={onSave}><Heart size={17} fill={saved?"currentColor":"none"}/></button><button className={"compare-btn"+(compared?" active":"")} onClick={onCompare}>{compared?"Compared":"Compare"}</button></div></div></article>;
