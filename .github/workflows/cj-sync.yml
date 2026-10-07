@@ -2,6 +2,10 @@ name: CJ product sync
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "scripts/sync-cj-products.mjs"
+      - ".github/workflows/cj-sync.yml"
   schedule:
     - cron: "17 */6 * * *"
 
