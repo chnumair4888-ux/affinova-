@@ -150,7 +150,7 @@ async function upsertProducts(products, categories) {
     rows.push({
       title: String(p.title).trim(),
       slug: `cj-${slugify(p.id)}`,
-      short_description: String(p.description || "").replace(/\\s+/g, " ").slice(0, 220) || null,
+      short_description: String(p.description || "").replace(/\s+/g, " ").slice(0, 220) || null,
       description: p.description || null,
       price,
       original_price: p.price?.amount != null ? Number(p.price.amount) : null,
