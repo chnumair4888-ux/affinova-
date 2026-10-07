@@ -85,14 +85,18 @@ async function loadCategories() {
   return supabase("categories?select=id,name,slug&is_active=eq.true");
 }
 
-async function fetchProducts(keyword) {
+async function fetchProducts(keyword = null) {
+  const keywordClause = keyword
+    ? `keywords: ["${keyword.replace(/"/g, "\\\"")}"]`
+    : "";
+
   const query = `query {
     shoppingProducts(
       companyId: "${CJ_CID}"
-      keywords: ["${keyword.replace(/"/g, "\\\"")}"]
+      ${keywordClause}
       partnerStatus: JOINED
       offset: 0
-      limit: 60
+      limit: 1000
       includeDeletedProducts: false
     ) {
       totalCount
@@ -185,11 +189,20 @@ async function upsertProducts(products, categories) {
 
 const categories = await loadCategories();
 let all = [];
-for (const keyword of keywords) {
-  console.log(`CJ sync: ${keyword}`);
-  const products = await fetchProducts(keyword);
-  console.log(`  received ${products.length}`);
-  all.push(...products);
+
+console.log("CJ sync: discovering all products from joined advertisers");
+const broad = await fetchProducts();
+console.log(`  broad search received ${broad.length}`);
+all.push(...broad);
+
+if (broad.length === 0) {
+  console.log("No joined products returned; retrying keyword searches for diagnostics.");
+  for (const keyword of keywords) {
+    console.log(`CJ sync: ${keyword}`);
+    const products = await fetchProducts(keyword);
+    console.log(`  received ${products.length}`);
+    all.push(...products);
+  }
 }
 
 const imported = await upsertProducts(all, categories);
