@@ -25,8 +25,8 @@ function loadAdSense(client:string){
 
 export default function AdSlot({slot,className=""}:AdSlotProps){
   const client=import.meta.env.VITE_ADSENSE_CLIENT as string|undefined;
-  if(!client||!slot)return null;
   useEffect(()=>{
+    if(!client||!slot)return;
     let cancelled=false;
     loadAdSense(client).then(()=>{
       if(cancelled)return;
@@ -34,5 +34,6 @@ export default function AdSlot({slot,className=""}:AdSlotProps){
     }).catch(()=>{});
     return()=>{cancelled=true};
   },[client,slot]);
+  if(!client||!slot)return null;
   return <ins className={"adsbygoogle affinova-ad "+className} style={{display:"block"}} data-ad-client={client} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="true"/>;
 }
