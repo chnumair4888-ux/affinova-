@@ -10,7 +10,7 @@ if (!SUPABASE_SERVICE_ROLE_KEY) throw new Error("Missing SUPABASE_SERVICE_ROLE_K
 
 const keywords = [
   "electronics", "gadgets", "smart home", "kitchen", "home",
-  "gaming", "toys", "sports", "fitness", "beauty", "fashion"
+  "gaming", "toys", "sports", "fitness", "beauty", "fashion", "office"
 ];
 
 async function cj(query) {
