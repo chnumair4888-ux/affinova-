@@ -3,6 +3,7 @@ import {supabase} from "./lib/supabase";
 import AdminPanel from "./AdminPanel";
 import type {Product,Category,Guide} from "./types";
 import {ArrowRight,BookOpen,ExternalLink,Heart,LayoutDashboard,LogIn,Menu,Search,ShieldCheck,Sparkles,Tag,X} from "lucide-react";
+import AdSlot from "./AdSlot";
 
 const money=(n:number,c:string)=>new Intl.NumberFormat("en-US",{style:"currency",currency:c||"USD"}).format(n);
 const productImage=(p:Product)=>p.image_url||p.images?.[0]||"https://placehold.co/800x600/111827/ffffff?text="+encodeURIComponent(p.title.slice(0,24));
