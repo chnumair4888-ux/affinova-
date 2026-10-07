@@ -2,11 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import {ProductPage,GuidePage} from "./DetailPages";
-import {PrivacyPage,TermsPage,AffiliatePage,ContactPage,NotFoundPage} from "./LegalPages";
+import {AboutPage,PrivacyPage,TermsPage,AffiliatePage,ContactPage,NotFoundPage} from "./LegalPages";
 import "./index.css";
 
 function Root(){
  const path=location.pathname;
+ if(path==="/about") return <AboutPage/>;
  if(path==="/privacy") return <PrivacyPage/>;
  if(path==="/terms") return <TermsPage/>;
  if(path==="/affiliate-disclosure") return <AffiliatePage/>;
