@@ -1,4 +1,6 @@
 const CJ_LINK_ENDPOINT = "https://link-search.api.cj.com/v2/link-search";
+const CJ_ADVERTISER_ENDPOINT = "https://advertiser-lookup.api.cj.com/v2/advertiser-lookup";
+const CJ_CID = process.env.CJ_CID || "8093374";
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://vrebunefcbcqfmllxsdm.supabase.co";
 const CJ_PID = process.env.CJ_PID || "101899447";
 const CJ_TOKEN = process.env.CJ_API_TOKEN;
@@ -59,8 +61,23 @@ function xmlValue(block,names) {
   return "";
 }
 
-async function fetchLinkProducts(keyword) {
+async function lookupAdvertisers(name) {
+  const params = new URLSearchParams({"requestor-cid":CJ_CID,"advertiser-name":name,"records-per-page":"100","page-number":"1"});
+  const res = await fetch(`${CJ_ADVERTISER_ENDPOINT}?${params.toString()}`, {headers:{Authorization:`Bearer ${CJ_TOKEN}`,Accept:"application/xml, text/xml"}});
+  const raw = await res.text();
+  if (!res.ok) throw new Error(`CJ Advertiser Lookup HTTP ${res.status}: ${raw.slice(0,1200)}`);
+  const blocks = raw.match(/<advertiser[^>]*>[\\s\\S]*?<\\/advertiser>/gi)||[];
+  return blocks.map(block=>({
+    id: xmlValue(block,["advertiser-id","advertiserId","id","cid"]),
+    name: xmlValue(block,["advertiser-name","advertiserName","name"]),
+    url: xmlValue(block,["program-url","programUrl","url"]),
+    relationship: xmlValue(block,["relationship-status","relationshipStatus","status"])
+  })).filter(x=>x.id);
+}
+
+async function fetchLinkProducts(keyword, advertiserIds=[]) {
   const params = new URLSearchParams({"website-id":CJ_PID,keywords:keyword,"records-per-page":"100","page-number":"1"});
+  if (advertiserIds.length) params.set("advertiser-ids", advertiserIds.join(","));
   const res = await fetch(`${CJ_LINK_ENDPOINT}?${params.toString()}`, {headers:{Authorization:`Bearer ${CJ_TOKEN}`,Accept:"application/xml, text/xml, application/json"}});
   const raw = await res.text();
   if (!res.ok) throw new Error(`CJ Link Search HTTP ${res.status}: ${raw.slice(0,1200)}`);
@@ -101,11 +118,21 @@ async function upsertProducts(products,categories) {
 
 const categories=await loadCategories();
 let all=[];
-console.log(`CJ sync: using Link Search API with website PID ${CJ_PID}`);
+const advertiserIds=[];
+for (const name of ["Ascora","Abelssoft"]) {
+  console.log(`CJ advertiser lookup: ${name}`);
+  const matches=await lookupAdvertisers(name);
+  console.log(`  found ${matches.length} advertisers`);
+  for (const m of matches) {
+    console.log(`  advertiser: ${m.id} | ${m.name} | ${m.url} | ${m.relationship}`);
+    if (m.id && !advertiserIds.includes(m.id)) advertiserIds.push(m.id);
+  }
+}
+console.log(`CJ sync: using Link Search API with website PID ${CJ_PID}${advertiserIds.length ? ` and advertiser IDs ${advertiserIds.join(",")}` : ""}`);
 for(let i=0;i<keywords.length;i++){
   const keyword=keywords[i];
   console.log(`CJ link search: ${keyword} (${i+1}/${keywords.length})`);
-  const links=await fetchLinkProducts(keyword);
+  const links=await fetchLinkProducts(keyword, advertiserIds);
   console.log(`  received ${links.length} links`);
   all.push(...links);
   if(i<keywords.length-1) await new Promise(resolve=>setTimeout(resolve,2500));
