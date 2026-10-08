@@ -13,3 +13,4 @@ const res=await fetch(endpoint,{method:"POST",headers:{Authorization:"Bearer "+T
 const raw=await res.text();
 console.log("CJ Product Feed schema HTTP:",res.status);
 console.log(raw.slice(0,12000));
+console.log("CJ Product Feed schema check complete.");
