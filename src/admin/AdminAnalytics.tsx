@@ -10,7 +10,8 @@ export default function AdminAnalytics(){
   const [data,setData]=useState<Stat|null>(null);
   const [products,setProducts]=useState<ProductStat[]>([]);
   const [countries,setCountries]=useState<CountryStat[]>([]);
-  const [loading,setLoading]=useState(true);\n  const [error,setError]=useState("");
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState("");
 
   const load=useCallback(async()=>{
     setLoading(true);
@@ -35,7 +36,8 @@ export default function AdminAnalytics(){
 
   const exportCsv=()=>{
     const rows=[["Product","Views","Clicks","CTR"],...products.map(p=>[p.title,String(p.views),String(p.clicks),String(p.ctr)])];
-    const csv=rows.map(row=>row.map(v=>"\"" + String(v).replace(/"/g,'""') + "\"").join(",")).join("\n");
+    const csv=rows.map(row=>row.map(v=>"\"" + String(v).replace(/"/g,'""') + "\"").join(",")).join("
+");
     const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
     const url=URL.createObjectURL(blob),a=document.createElement("a");
     a.href=url;a.download="affinova-product-analytics-"+days+"d.csv";a.click();URL.revokeObjectURL(url);
@@ -53,7 +55,8 @@ export default function AdminAnalytics(){
         <button onClick={refresh} disabled={loading}>{loading?"Loading...":"Refresh"}</button><button onClick={exportCsv} disabled={!products.length}>Export CSV</button>
       </div>
     </div>
-    {error&&<div className="notice">{error}</div>}\n    <div className="admin-stats">
+    {error&&<div className="notice">{error}</div>}
+    <div className="admin-stats">
       {[["Visitors",data?.visitors],["Page views",data?.page_views],["Affiliate clicks",data?.affiliate_clicks],["CTR",String(ctr)+"%"],["Searches",data?.searches]].map(([label,value])=>
         <article className="admin-stat" key={label as string}><span>{label}</span><strong>{loading?"…":value??"No data yet"}</strong></article>
       )}
