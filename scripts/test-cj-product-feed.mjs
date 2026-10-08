@@ -1,23 +1,26 @@
 const TOKEN=process.env.CJ_API_TOKEN;
 const endpoint="https://ads.api.cj.com/query";
-const introspection=`
+const query=`
 query {
-  __schema {
-    types {
+  shopping: __type(name: "ShoppingProducts") {
+    fields {
       name
-      kind
+      type { kind name ofType { kind name ofType { kind name ofType { kind name } } } }
+    }
+  }
+  product: __type(name: "Product") {
+    kind
+    possibleTypes { name kind }
+  }
+  productFields: __type(name: "Product") {
+    fields {
+      name
+      type { kind name ofType { kind name ofType { kind name } } }
     }
   }
 }`;
-const res=await fetch(endpoint,{method:"POST",headers:{Authorization:"Bearer "+TOKEN,"Content-Type":"application/json"},body:JSON.stringify({query:introspection})});
+const res=await fetch(endpoint,{method:"POST",headers:{Authorization:"Bearer "+TOKEN,"Content-Type":"application/json"},body:JSON.stringify({query})});
 const raw=await res.text();
-console.log("CJ Product Feed schema HTTP:",res.status);
-try {
-  const json=JSON.parse(raw);
-  const types=json?.data?.__schema?.types||[];
-  const matches=types.filter(t=>/product|shopping|result/i.test(t.name||""));
-  console.log(JSON.stringify({matchingTypes:matches},null,2));
-} catch {
-  console.log(raw.slice(0,16000));
-}
-console.log("CJ Product Feed type discovery complete.");
+console.log("CJ Product Feed result type HTTP:",res.status);
+console.log(raw.slice(0,20000));
+console.log("CJ Product Feed result type check complete.");
