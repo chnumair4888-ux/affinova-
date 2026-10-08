@@ -10,7 +10,7 @@ export default function AdminAnalytics(){
   const [data,setData]=useState<Stat|null>(null);
   const [products,setProducts]=useState<ProductStat[]>([]);
   const [countries,setCountries]=useState<CountryStat[]>([]);
-  const [loading,setLoading]=useState(true);
+  const [loading,setLoading]=useState(true);\n  const [error,setError]=useState("");
 
   const load=useCallback(async()=>{
     setLoading(true);
@@ -53,7 +53,7 @@ export default function AdminAnalytics(){
         <button onClick={refresh} disabled={loading}>{loading?"Loading...":"Refresh"}</button><button onClick={exportCsv} disabled={!products.length}>Export CSV</button>
       </div>
     </div>
-    <div className="admin-stats">
+    {error&&<div className="notice">{error}</div>}\n    <div className="admin-stats">
       {[["Visitors",data?.visitors],["Page views",data?.page_views],["Affiliate clicks",data?.affiliate_clicks],["CTR",String(ctr)+"%"],["Searches",data?.searches]].map(([label,value])=>
         <article className="admin-stat" key={label as string}><span>{label}</span><strong>{loading?"…":value??"No data yet"}</strong></article>
       )}
