@@ -31,5 +31,5 @@ jobs:
           CJ_API_TOKEN: ${{ secrets.CJ_API_TOKEN }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           CJ_CID: "8093374"
-          CJ_PID: "101893390"
+          CJ_PID: "101899447"
           SUPABASE_URL: "https://vrebunefcbcqfmllxsdm.supabase.co"
