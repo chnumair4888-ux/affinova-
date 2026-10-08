@@ -84,15 +84,37 @@ async function loadCategories() {
   return supabase("categories?select=id,name,slug&is_active=eq.true");
 }
 
-async function fetchProducts(keyword = null) {
+async function fetchFeeds() {
+  const query = `query {
+    shoppingProductFeeds(companyId: "${CJ_CID}", limit: 1000) {
+      totalCount
+      resultList {
+        advertiserId
+        advertiserName
+        feedName
+        currency
+        productCount
+        lastUpdated
+      }
+    }
+  }`;
+  const data = await cj(query);
+  return data.shoppingProductFeeds?.resultList || [];
+}
+
+async function fetchProducts({ keyword = null, advertiserIds = [] } = {}) {
   const keywordClause = keyword
     ? `keywords: ["${keyword.replace(/"/g, "\\\"")}"]`
+    : "";
+  const advertiserClause = advertiserIds.length
+    ? `advertiserIds: [${advertiserIds.map(id => `"${String(id).replace(/"/g, "\\\"")}"`).join(", ")}]`
     : "";
 
   const query = `query {
     shoppingProducts(
       companyId: "${CJ_CID}"
       ${keywordClause}
+      ${advertiserClause}
       partnerStatus: JOINED
       offset: 0
       limit: 1000
@@ -188,19 +210,22 @@ async function upsertProducts(products, categories) {
 const categories = await loadCategories();
 let all = [];
 
-console.log("CJ sync: discovering all products from joined advertisers");
-const broad = await fetchProducts();
-console.log(`  broad search received ${broad.length}`);
-all.push(...broad);
+console.log("CJ sync: discovering advertiser feeds");
+const feeds = await fetchFeeds();
+console.log(`  feeds discovered: ${feeds.length}`);
+const advertiserIds = [...new Set(feeds.map(f => f.advertiserId).filter(Boolean))];
+console.log(`  advertiser IDs discovered: ${advertiserIds.length}`);
 
-if (broad.length === 0) {
-  console.log("No joined products returned; retrying keyword searches for diagnostics.");
-  for (const keyword of keywords) {
-    console.log(`CJ sync: ${keyword}`);
-    const products = await fetchProducts(keyword);
-    console.log(`  received ${products.length}`);
-    all.push(...products);
-  }
+console.log("CJ sync: searching joined products by advertiser IDs");
+for (const keyword of keywords) {
+  console.log(`CJ sync: ${keyword}`);
+  const products = await fetchProducts({ keyword, advertiserIds });
+  console.log(`  received ${products.length}`);
+  all.push(...products);
+}
+
+if (all.length === 0) {
+  console.log("CJ sync: no joined products returned. Feed discovery works, but CJ is not exposing product rows for the current publisher relationships.");
 }
 
 const imported = await upsertProducts(all, categories);
