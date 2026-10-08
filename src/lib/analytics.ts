@@ -43,14 +43,10 @@ export function trackClick(eventType:"affiliate"|"cta"|"wishlist"|"compare", pro
   if(!canTrack()) return;
   const payload={session_id:getAnalyticsSessionId(),event_type:eventType,path:location.pathname,product_id:productId||null,label:label||null,destination:destination||null,device_type:deviceType(),country:null};
   try{
-    const blob=new Blob([JSON.stringify(payload)],{type:"application/json"});
-    if(navigator.sendBeacon){
-      const url=`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/click_events`;
-      const key=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY||import.meta.env.VITE_SUPABASE_ANON_KEY||"";
-      const ok=navigator.sendBeacon(url,new Blob([JSON.stringify(payload)],{type:"application/json"}));
-      if(ok)return;
-      void key;
-    }
+    const url=`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/click_events`;
+    const key=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY||import.meta.env.VITE_SUPABASE_ANON_KEY||"";
+    void fetch(url,{method:"POST",headers:{"content-type":"application/json","apikey":key,"Authorization":`Bearer ${key}`,"Prefer":"return=minimal"},body:JSON.stringify(payload),keepalive:true});
+    return;
   }catch{}
   void supabase.from("click_events").insert(payload);
 }
