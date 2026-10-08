@@ -60,7 +60,7 @@ function xmlValue(block,names) {
 }
 
 async function fetchLinkProducts(keyword) {
-  const params = new URLSearchParams({"website-id":CJ_PID,"advertiser-ids":"joined",keywords:keyword,"records-per-page":"100","page-number":"1"});
+  const params = new URLSearchParams({"website-id":CJ_PID,keywords:keyword,"records-per-page":"100","page-number":"1"});
   const res = await fetch(`${CJ_LINK_ENDPOINT}?${params.toString()}`, {headers:{Authorization:`Bearer ${CJ_TOKEN}`,Accept:"application/xml, text/xml, application/json"}});
   const raw = await res.text();
   if (!res.ok) throw new Error(`CJ Link Search HTTP ${res.status}: ${raw.slice(0,1200)}`);
@@ -110,6 +110,6 @@ for(let i=0;i<keywords.length;i++){
   all.push(...links);
   if(i<keywords.length-1) await new Promise(resolve=>setTimeout(resolve,2500));
 }
-if(all.length===0) console.log("CJ sync: no joined affiliate links returned. Check CJ advertiser relationships.");
+if(all.length===0) console.log("CJ sync: no affiliate links returned for this property.");
 const imported=await upsertProducts(all,categories);
 console.log(`CJ sync complete: ${imported} products processed from ${new Set(all.map(p=>p.id)).size} unique CJ links.`);
