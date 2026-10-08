@@ -68,7 +68,7 @@ async function lookupAdvertisers(name) {
   if (!res.ok) throw new Error(`CJ Advertiser Lookup HTTP ${res.status}: ${raw.slice(0,1200)}`);
   const blocks = raw.split("<advertiser").slice(1).map(x=>"<advertiser"+x).filter(x=>x.includes("</advertiser>")).map(x=>x.split("</advertiser>")[0]+"</advertiser>");
   return blocks.map(block=>({
-    id: xmlValue(block,["advertiser-id","advertiserId","id","cid"]),
+    id: xmlValue(block,["advertiser-id"]),
     name: xmlValue(block,["advertiser-name","advertiserName","name"]),
     url: xmlValue(block,["program-url","programUrl","url"]),
     relationship: xmlValue(block,["relationship-status","relationshipStatus","status"])
