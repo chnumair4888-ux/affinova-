@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 type Stat={visitors:number;page_views:number;affiliate_clicks:number;searches:number};
@@ -12,25 +12,21 @@ export default function AdminAnalytics(){
   const [countries,setCountries]=useState<CountryStat[]>([]);
   const [loading,setLoading]=useState(true);
 
-  useEffect(()=>{
-    let alive=true;
-    (async()=>{
-      setLoading(true);
-      const end=new Date(),start=new Date(Date.now()-days*86400000);
-      const [summary,stats,countryStats]=await Promise.all([
-        supabase.rpc("admin_analytics_summary",{p_start:start.toISOString(),p_end:end.toISOString()}),
-        supabase.from("admin_product_stats").select("id,title,views,clicks,ctr").order("clicks",{ascending:false}).limit(50),
-        supabase.rpc("admin_country_stats",{p_start:start.toISOString(),p_end:end.toISOString()})
-      ]);
-      if(alive){
-        setData((summary.data||null) as Stat|null);
-        setProducts((stats.data||[]) as ProductStat[]);
-        setCountries((countryStats.data||[]) as CountryStat[]);
-        setLoading(false);
-      }
-    })();
-    return()=>{alive=false};
+  const load=useCallback(async()=>{
+    setLoading(true);
+    const end=new Date(),start=new Date(Date.now()-days*86400000);
+    const [summary,stats,countryStats]=await Promise.all([
+      supabase.rpc("admin_analytics_summary",{p_start:start.toISOString(),p_end:end.toISOString()}),
+      supabase.from("admin_product_stats").select("id,title,views,clicks,ctr").order("clicks",{ascending:false}).limit(50),
+      supabase.rpc("admin_country_stats",{p_start:start.toISOString(),p_end:end.toISOString()})
+    ]);
+    setData((summary.data||null) as Stat|null);
+    setProducts((stats.data||[]) as ProductStat[]);
+    setCountries((countryStats.data||[]) as CountryStat[]);
+    setLoading(false);
   },[days]);
+
+  useEffect(()=>{load()},[load]);
 
   const ctr=useMemo(()=>{
     if(!data?.page_views)return 0;
@@ -45,7 +41,7 @@ export default function AdminAnalytics(){
     a.href=url;a.download="affinova-product-analytics-"+days+"d.csv";a.click();URL.revokeObjectURL(url);
   };
 
-  const refresh=()=>{setDays(d=>d)};
+  const refresh=()=>{void load()};
 
   return <section className="admin-page">
     <div className="admin-toolbar">
