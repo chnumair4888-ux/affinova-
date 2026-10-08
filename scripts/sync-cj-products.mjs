@@ -1,6 +1,6 @@
 const CJ_LINK_ENDPOINT = "https://link-search.api.cj.com/v2/link-search";
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://vrebunefcbcqfmllxsdm.supabase.co";
-const CJ_PID = process.env.CJ_PID || "101893390";
+const CJ_PID = process.env.CJ_PID || "101899447";
 const CJ_TOKEN = process.env.CJ_API_TOKEN;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -68,30 +68,20 @@ async function fetchLinkProducts(keyword) {
     const json=JSON.parse(raw);
     const links=json.links || json.results || [];
     return links.map(link=>({
-      id:String(link.linkId||link.id||link.linkID||""),
-      advertiserId:String(link.advertiserId||""),
-      advertiserName:link.advertiserName||link.advertiser||"",
-      title:link.linkName||link.name||link.title||"",
-      description:link.description||"",
-      clickUrl:link.clickUrl||link.clickURL||link.linkUrl||link.linkURL||"",
-      destinationUrl:link.destinationUrl||link.destinationURL||"",
-      imageUrl:link.imageUrl||link.imageURL||"",
-      category:link.category||link.subCategory||"",
-      linkType:link.linkType||""
+      id:String(link.linkId||link.id||link.linkID||""), advertiserId:String(link.advertiserId||""),
+      advertiserName:link.advertiserName||link.advertiser||"", title:link.linkName||link.name||link.title||"",
+      description:link.description||"", clickUrl:link.clickUrl||link.clickURL||link.linkUrl||link.linkURL||"",
+      destinationUrl:link.destinationUrl||link.destinationURL||"", imageUrl:link.imageUrl||link.imageURL||"",
+      category:link.category||link.subCategory||"", linkType:link.linkType||""
     })).filter(p=>p.id && (p.title||p.clickUrl||p.destinationUrl));
   }
   const blocks=raw.match(/<link[^>]*>[\s\S]*?<\/link>/gi)||[];
   return blocks.map(block=>({
-    id:xmlValue(block,["linkId","id","linkID"]),
-    advertiserId:xmlValue(block,["advertiserId","advertiserID"]),
-    advertiserName:xmlValue(block,["advertiserName","advertiser"]),
-    title:xmlValue(block,["linkName","name","title"]),
-    description:xmlValue(block,["description","linkDescription"]),
-    clickUrl:xmlValue(block,["clickUrl","clickURL","linkUrl","linkURL"]),
-    destinationUrl:xmlValue(block,["destinationUrl","destinationURL"]),
-    imageUrl:xmlValue(block,["imageUrl","imageURL","image"]),
-    category:xmlValue(block,["category","subCategory"]),
-    linkType:xmlValue(block,["linkType"])
+    id:xmlValue(block,["linkId","id","linkID"]), advertiserId:xmlValue(block,["advertiserId","advertiserID"]),
+    advertiserName:xmlValue(block,["advertiserName","advertiser"]), title:xmlValue(block,["linkName","name","title"]),
+    description:xmlValue(block,["description","linkDescription"]), clickUrl:xmlValue(block,["clickUrl","clickURL","linkUrl","linkURL"]),
+    destinationUrl:xmlValue(block,["destinationUrl","destinationURL"]), imageUrl:xmlValue(block,["imageUrl","imageURL","image"]),
+    category:xmlValue(block,["category","subCategory"]), linkType:xmlValue(block,["linkType"])
   })).filter(p=>p.id && (p.title||p.clickUrl||p.destinationUrl));
 }
 
@@ -111,7 +101,7 @@ async function upsertProducts(products,categories) {
 
 const categories=await loadCategories();
 let all=[];
-console.log("CJ sync: using Link Search API for joined affiliate links");
+console.log(`CJ sync: using Link Search API with website PID ${CJ_PID}`);
 for(let i=0;i<keywords.length;i++){
   const keyword=keywords[i];
   console.log(`CJ link search: ${keyword} (${i+1}/${keywords.length})`);
@@ -120,6 +110,6 @@ for(let i=0;i<keywords.length;i++){
   all.push(...links);
   if(i<keywords.length-1) await new Promise(resolve=>setTimeout(resolve,2500));
 }
-if(all.length===0) console.log("CJ sync: no joined affiliate links returned. Check CJ advertiser relationships and the PID.");
+if(all.length===0) console.log("CJ sync: no joined affiliate links returned. Check CJ advertiser relationships.");
 const imported=await upsertProducts(all,categories);
 console.log(`CJ sync complete: ${imported} products processed from ${new Set(all.map(p=>p.id)).size} unique CJ links.`);
