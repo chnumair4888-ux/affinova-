@@ -2,13 +2,13 @@ const TOKEN=process.env.CJ_API_TOKEN;
 const endpoint="https://ads.api.cj.com/query";
 const query=`
 query {
-  __type(name: "ShoppingProducts") {
+  shopping: __type(name: "ShoppingProducts") {
     fields {
       name
       type { kind name ofType { kind name ofType { kind name } } }
     }
   }
-  __type(name: "ShoppingProduct") {
+  product: __type(name: "ShoppingProduct") {
     fields {
       name
       type { kind name ofType { kind name ofType { kind name } } }
