@@ -1,6 +1,8 @@
 const CJ_ENDPOINT = "https://ads.api.cj.com/query";
+const CJ_LINK_ENDPOINT = "https://link-search.api.cj.com/v2/link-search";
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://vrebunefcbcqfmllxsdm.supabase.co";
 const CJ_CID = process.env.CJ_CID || "8093374";
+const CJ_PID = process.env.CJ_PID || "101893390";
 const CJ_TOKEN = process.env.CJ_API_TOKEN;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -84,124 +86,122 @@ async function loadCategories() {
   return supabase("categories?select=id,name,slug&is_active=eq.true");
 }
 
-async function fetchFeeds() {
-  const query = `query {
-    shoppingProductFeeds(companyId: "${CJ_CID}", limit: 1000) {
-      totalCount
-      resultList {
-        advertiserId
-        advertiserName
-        feedName
-        currency
-        productCount
-        lastUpdated
-      }
-    }
-  }`;
-  const data = await cj(query);
-  return data.shoppingProductFeeds?.resultList || [];
+function xmlDecode(value = "") {
+  return String(value)
+    .replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, "$1")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
 }
 
-async function fetchProducts({ keyword = null, advertiserIds = [] } = {}) {
-  const keywordClause = keyword
-    ? `keywords: ["${keyword.replace(/"/g, "\\\"")}"]`
-    : "";
-  const advertiserClause = advertiserIds.length
-    ? `advertiserIds: [${advertiserIds.map(id => `"${String(id).replace(/"/g, "\\\"")}"`).join(", ")}]`
-    : "";
+function xmlValue(block, names) {
+  for (const name of names) {
+    const m = block.match(new RegExp("<" + name + "[^>]*>([\\s\\S]*?)</" + name + ">", "i"));
+    if (m) return xmlDecode(m[1].replace(/<[^>]+>/g, "").trim());
+  }
+  return "";
+}
 
-  const query = `query {
-    shoppingProducts(
-      companyId: "${CJ_CID}"
-      ${keywordClause}
-      ${advertiserClause}
-      partnerStatus: JOINED
-      offset: 0
-      limit: 1000
-      includeDeletedProducts: false
-    ) {
-      totalCount
-      count
-      resultList {
-        id
-        adId
-        advertiserId
-        advertiserName
-        brand
-        title
-        description
-        imageLink
-        additionalImageLink
-        link
-        price { amount currency }
-        salePrice { amount currency }
-        effectiveDerivedPrice { amount currency }
-        discountPercentage
-        productType
-        googleProductCategory { id name }
-        availability
-        isDeleted
-        lastUpdated
-        targetCountry
-        serviceableAreas
-      }
+async function fetchLinkProducts(keyword) {
+  const params = new URLSearchParams({
+    "website-id": CJ_PID,
+    "advertiser-ids": "joined",
+    keywords: keyword,
+    "link-type": "Content",
+    "records-per-page": "100",
+    "page-number": "1",
+  });
+  const res = await fetch(`${CJ_LINK_ENDPOINT}?${params.toString()}`, {
+    headers: { Authorization: `Bearer ${CJ_TOKEN}`, Accept: "application/xml, text/xml, application/json" },
+  });
+  const raw = await res.text();
+  if (!res.ok) throw new Error(`CJ Link Search HTTP ${res.status}: ${raw.slice(0, 1200)}`);
+  if (raw.trim().startsWith("{")) {
+    const json = JSON.parse(raw);
+    const links = json.links || json.results || [];
+    return links.map(link => ({
+      id: String(link.linkId || link.id || link.linkID || Math.random()),
+      advertiserId: String(link.advertiserId || ""),
+      advertiserName: link.advertiserName || link.advertiser || "",
+      title: link.linkName || link.name || link.title || "",
+      description: link.description || "",
+      clickUrl: link.clickUrl || link.clickURL || link.linkUrl || link.linkURL || "",
+      destinationUrl: link.destinationUrl || link.destinationURL || "",
+      imageUrl: link.imageUrl || link.imageURL || "",
+      category: link.category || link.subCategory || "",
+      linkType: link.linkType || "",
+    })).filter(p => p.title || p.clickUrl || p.destinationUrl);
+  }
+  const blocks = raw.match(/<link[^>]*>[\\s\\S]*?<\\/link>/gi) || [];
+  return blocks.map(block => ({
+    id: xmlValue(block, ["linkId", "id", "linkID"]),
+    advertiserId: xmlValue(block, ["advertiserId", "advertiserID"]),
+    advertiserName: xmlValue(block, ["advertiserName", "advertiser"]),
+    title: xmlValue(block, ["linkName", "name", "title"]),
+    description: xmlValue(block, ["description", "linkDescription"]),
+    clickUrl: xmlValue(block, ["clickUrl", "clickURL", "linkUrl", "linkURL"]),
+    destinationUrl: xmlValue(block, ["destinationUrl", "destinationURL"]),
+    imageUrl: xmlValue(block, ["imageUrl", "imageURL", "image"]),
+    category: xmlValue(block, ["category", "subCategory"]),
+    linkType: xmlValue(block, ["linkType"]),
+  })).filter(p => p.title || p.clickUrl || p.destinationUrl);
+}
+
+function pickCategory(product, categories) {
+  const text = [product.title, product.advertiserName, product.category].filter(Boolean).join(" ").toLowerCase();
+  const rules = [
+    ["gaming", ["gaming","game","playstation","xbox","nintendo","controller","console"]],
+    ["toys", ["toy","lego","doll","puzzle","kids","playset"]],
+    ["sports", ["sport","fitness","gym","running","football","basketball","yoga","cycling"]],
+    ["beauty", ["beauty","makeup","cosmetic","skincare","hair","perfume"]],
+    ["fashion", ["fashion","clothing","shirt","shoe","dress","jacket","apparel"]],
+    ["home", ["home","furniture","decor","storage","cleaning"]],
+    ["kitchen", ["kitchen","cook","coffee","blender","mixer","utensil","pan"]],
+    ["electronics", ["electronic","gadget","phone","tablet","laptop","computer","camera","headphone","speaker","charger","watch","smart home"]],
+  ];
+  for (const [key, words] of rules) {
+    if (words.some(word => text.includes(word))) {
+      const match = categories.find(c => String(c.slug || c.name).toLowerCase().includes(key));
+      if (match) return match.id;
     }
-  }`;
-  const data = await cj(query);
-  return data.shoppingProducts?.resultList || [];
+  }
+  return null;
 }
 
 async function upsertProducts(products, categories) {
-  const unique = new Map(products.map(p => [String(p.id), p]));
+  const unique = new Map(products.map(p => [String(p.id || `${p.advertiserId}-${p.title}`), p]));
   const rows = [];
-
   for (const p of unique.values()) {
-    const amount = p.effectiveDerivedPrice?.amount ?? p.salePrice?.amount ?? p.price?.amount;
-    const currency = p.effectiveDerivedPrice?.currency ?? p.salePrice?.currency ?? p.price?.currency ?? "USD";
-    const price = Number(amount);
-    if (!p.title || !Number.isFinite(price) || price < 0) continue;
-
-    const affiliateUrl = p.link || null;
-    const categoryId = pickCategory(p, categories);
-    const tags = [
-      ...(p.productType || []),
-      p.brand,
-      p.advertiserName,
-      p.googleProductCategory?.name,
-      p.targetCountry,
-    ].filter(Boolean).map(String).slice(0, 20);
-
+    const title = String(p.title || p.advertiserName || "").trim();
+    const affiliateUrl = p.clickUrl || p.destinationUrl || null;
+    if (!title || !affiliateUrl) continue;
+    const description = String(p.description || `${p.advertiserName || "CJ"} affiliate offer`).replace(/\\s+/g, " ").slice(0, 1000);
     rows.push({
-      title: String(p.title).trim(),
-      slug: `cj-${slugify(p.id)}`,
-      short_description: String(p.description || "").replace(/\s+/g, " ").slice(0, 220) || null,
-      description: p.description || null,
-      price,
-      original_price: p.price?.amount != null ? Number(p.price.amount) : null,
-      currency: String(currency).toUpperCase(),
+      title,
+      slug: `cj-${slugify(p.id || `${p.advertiserId}-${title}`)}`,
+      short_description: description.slice(0, 220) || null,
+      description,
+      price: 0,
+      original_price: null,
+      currency: "USD",
       rating: 0,
       review_count: 0,
-      image_url: p.imageLink || p.additionalImageLink?.[0] || null,
+      image_url: p.imageUrl || null,
       affiliate_url: affiliateUrl,
-      brand: p.brand || p.advertiserName || null,
-      category_id: categoryId,
-      tags,
-      key_features: (p.productType || []).slice(0, 8),
+      brand: p.advertiserName || "CJ Affiliate",
+      category_id: pickCategory(p, categories),
+      tags: [p.category, p.advertiserName, p.linkType].filter(Boolean).map(String).slice(0, 20),
+      key_features: [],
       is_featured: false,
-      is_deal: Boolean(p.salePrice || (p.discountPercentage && p.discountPercentage > 0)),
-      is_active: !p.isDeleted && String(p.availability || "IN_STOCK") !== "OUT_OF_STOCK",
+      is_deal: false,
+      is_active: true,
       is_sample: false,
     });
   }
-
   for (let i = 0; i < rows.length; i += 50) {
-    const batch = rows.slice(i, i + 50);
     await supabase("products?on_conflict=slug", {
       method: "POST",
-      headers: {
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      },
-      body: JSON.stringify(batch),
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify(rows.slice(i, i + 50)),
     });
   }
   return rows.length;
@@ -210,30 +210,19 @@ async function upsertProducts(products, categories) {
 const categories = await loadCategories();
 let all = [];
 
-console.log("CJ sync: discovering advertiser feeds");
-const feeds = await fetchFeeds();
-console.log(`  feeds discovered: ${feeds.length}`);
-const advertiserIds = [...new Set(feeds.map(f => f.advertiserId).filter(Boolean))];
-console.log(`  advertiser IDs discovered: ${advertiserIds.length}`);
-
-console.log("CJ sync: searching joined products in advertiser batches");
-const advertiserBatches = [];
-for (let i = 0; i < advertiserIds.length; i += 25) {
-  advertiserBatches.push(advertiserIds.slice(i, i + 25));
-}
-
-for (const keyword of keywords) {
-  console.log(`CJ sync: ${keyword} (${advertiserBatches.length} advertiser batches)`);
-  for (let i = 0; i < advertiserBatches.length; i++) {
-    const products = await fetchProducts({ keyword, advertiserIds: advertiserBatches[i] });
-    if (products.length) console.log(`  batch ${i + 1}/${advertiserBatches.length}: received ${products.length}`);
-    all.push(...products);
-  }
+console.log("CJ sync: using Link Search API for joined affiliate links");
+for (let i = 0; i < keywords.length; i++) {
+  const keyword = keywords[i];
+  console.log(`CJ link search: ${keyword} (${i + 1}/${keywords.length})`);
+  const links = await fetchLinkProducts(keyword);
+  console.log(`  received ${links.length} links`);
+  all.push(...links);
+  if (i < keywords.length - 1) await new Promise(resolve => setTimeout(resolve, 2500));
 }
 
 if (all.length === 0) {
-  console.log("CJ sync: no joined products returned. Feed discovery works, but CJ is not exposing product rows for the current publisher relationships.");
+  console.log("CJ sync: no joined affiliate links returned. Check CJ advertiser relationships and the PID.");
 }
 
 const imported = await upsertProducts(all, categories);
-console.log(`CJ sync complete: ${imported} products processed from ${new Set(all.map(p => p.id)).size} unique CJ products.`);
+console.log(`CJ sync complete: ${imported} products processed from ${new Set(all.map(p => p.id)).size} unique CJ links.`);
