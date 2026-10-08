@@ -66,7 +66,7 @@ async function lookupAdvertisers(name) {
   const res = await fetch(`${CJ_ADVERTISER_ENDPOINT}?${params.toString()}`, {headers:{Authorization:`Bearer ${CJ_TOKEN}`,Accept:"application/xml, text/xml"}});
   const raw = await res.text();
   if (!res.ok) throw new Error(`CJ Advertiser Lookup HTTP ${res.status}: ${raw.slice(0,1200)}`);
-  const blocks = raw.split("<advertiser").slice(1).map(x=>"<advertiser"+x).filter(x=>x.includes("</advertiser>")).map(x=>x.split("</advertiser>")[0]+"</advertiser>");
+  const blocks = raw.match(/<advertiser>[\\s\\S]*?<\\/advertiser>/gi) || [];
   return blocks.map(block=>({
     id: xmlValue(block,["advertiser-id"]),
     name: xmlValue(block,["advertiser-name","advertiserName","name"]),
