@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - "scripts/sync-cj-products.mjs"
+      - "scripts/test-cj-product-feed.mjs"
       - ".github/workflows/cj-sync.yml"
   schedule:
     - cron: "17 */6 * * *"
@@ -24,6 +25,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: Test CJ Product Feed API
+        run: node scripts/test-cj-product-feed.mjs
+        env:
+          CJ_API_TOKEN: ${{ secrets.CJ_API_TOKEN }}
 
       - name: Sync CJ products to Supabase
         run: node scripts/sync-cj-products.mjs
