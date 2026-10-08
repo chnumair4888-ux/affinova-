@@ -1,44 +1,22 @@
 const TOKEN=process.env.CJ_API_TOKEN;
-const endpoint="https://ads.api.cj.com/query";
-const query=`
-query {
-  linkCodeType: __type(name: "LinkCode") {
-    fields { name type { kind name ofType { kind name ofType { kind name } } } }
-  }
-  amountType: __type(name: "AmountWithCurrency") {
-    fields { name type { kind name ofType { kind name ofType { kind name } } } }
-  }
-  shoppingProducts(
-    companyId: "435457"
-    keywords: ["Abelssoft"]
-    partnerStatus: JOINED
-    offset: 0
-    limit: 5
-    includeDeletedProducts: false
-  ) {
-    totalCount
-    count
-    limit
-    resultList {
-      ... on Shopping {
-        id
-        title
-        description
-        imageLink
-        link
-        price { amount currency }
-        advertiserId
-        advertiserName
-        brand
-        joinedStatus
-        targetCountry
-        availability
-      }
-    }
-  }
-}`;
-const res=await fetch(endpoint,{method:"POST",headers:{Authorization:"Bearer "+TOKEN,"Content-Type":"application/json"},body:JSON.stringify({query})});
-const raw=await res.text();
-console.log("CJ Product Feed query HTTP:",res.status);
-console.log(raw.slice(0,30000));
-console.log("CJ Product Feed query check complete.");
+const endpoint="https://advertiser-lookup.api.cj.com/v2/advertiser-lookup";
+if (!TOKEN) throw new Error("Missing CJ_API_TOKEN secret.");
+
+const params = new URLSearchParams({
+  "requestor-cid": process.env.CJ_CID || "8093374",
+  "advertiser-name": "Abelssoft",
+  "records-per-page": "20",
+  "page-number": "1"
+});
+
+const res = await fetch(`${endpoint}?${params.toString()}`, {
+  headers: { Authorization: "Bearer " + TOKEN, Accept: "application/xml, text/xml" }
+});
+const raw = await res.text();
+console.log("CJ advertiser lookup HTTP:", res.status);
+if (!res.ok) {
+  console.log(raw.slice(0, 5000));
+  process.exit(1);
+}
+console.log(raw.slice(0, 15000));
+console.log("CJ advertiser lookup check complete.");
