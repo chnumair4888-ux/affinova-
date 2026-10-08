@@ -5,7 +5,7 @@ query {
   __type(name: "ShoppingProducts") {
     fields {
       name
-      type { kind name ofType { kind name } }
+      type { kind name ofType { kind name ofType { kind name } } }
     }
   }
 }`;
