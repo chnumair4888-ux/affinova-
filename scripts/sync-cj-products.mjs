@@ -216,12 +216,19 @@ console.log(`  feeds discovered: ${feeds.length}`);
 const advertiserIds = [...new Set(feeds.map(f => f.advertiserId).filter(Boolean))];
 console.log(`  advertiser IDs discovered: ${advertiserIds.length}`);
 
-console.log("CJ sync: searching joined products by advertiser IDs");
+console.log("CJ sync: searching joined products in advertiser batches");
+const advertiserBatches = [];
+for (let i = 0; i < advertiserIds.length; i += 25) {
+  advertiserBatches.push(advertiserIds.slice(i, i + 25));
+}
+
 for (const keyword of keywords) {
-  console.log(`CJ sync: ${keyword}`);
-  const products = await fetchProducts({ keyword, advertiserIds });
-  console.log(`  received ${products.length}`);
-  all.push(...products);
+  console.log(`CJ sync: ${keyword} (${advertiserBatches.length} advertiser batches)`);
+  for (let i = 0; i < advertiserBatches.length; i++) {
+    const products = await fetchProducts({ keyword, advertiserIds: advertiserBatches[i] });
+    if (products.length) console.log(`  batch ${i + 1}/${advertiserBatches.length}: received ${products.length}`);
+    all.push(...products);
+  }
 }
 
 if (all.length === 0) {
