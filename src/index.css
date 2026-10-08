@@ -96,3 +96,27 @@
  .stats>div{padding:13px 11px}
  .stats>div:first-child{grid-column:1/-1}
 }
+
+/* Luxury admin visual system */
+.admin-shell aside{padding:22px 14px;gap:5px}
+.admin-shell aside .admin-brand-desktop{padding:4px 8px 16px;border-bottom:1px solid #ffffff12;margin-bottom:5px}
+.admin-shell aside .admin-brand .mark{width:32px;height:32px;background:linear-gradient(145deg,#f7f4ec,#bdb6a8);color:#171717;border:0;box-shadow:0 5px 18px #0005}
+.admin-shell aside small{margin:10px 9px 7px;color:#737981}
+.admin-shell aside .side{padding:11px 12px;border-radius:10px;font-size:12px;position:relative}
+.admin-shell aside .side.active{background:linear-gradient(100deg,#fff,#eeeae2);box-shadow:0 8px 22px #00000028;color:#111}
+.admin-shell aside .side.active:after{content:"";position:absolute;right:9px;width:4px;height:4px;border-radius:50%;background:#111}
+.admin-main{background:radial-gradient(circle at 92% 0,#fff 0,#f4f5f7 30%,#f4f5f7 100%);}
+.admin-top{margin-bottom:20px;padding-bottom:25px;border-bottom:1px solid #e0e2e5}
+.admin-top h1{font-size:44px;margin:8px 0 5px}
+.admin-subtitle{font-size:12px;color:#858a91}
+.admin-top-actions .btn{border-radius:9px;box-shadow:0 7px 18px #11111112}
+.stats{grid-template-columns:1.5fr .7fr .8fr;gap:12px;margin:0 0 28px}
+.stats>div{min-height:84px;border:1px solid #e1e3e6;border-radius:14px;padding:17px 18px;box-shadow:0 8px 25px #11111108;justify-content:center}
+.stats>div:first-child{background:linear-gradient(135deg,#17191c,#292c30);color:#fff;border-color:#17191c}
+.stats>div:first-child span{color:#aeb3ba}.stats span{font-size:9px;letter-spacing:.11em}
+.stats strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catalog-admin,.analytics-panel{border:1px solid #e0e2e5;border-radius:16px;box-shadow:0 12px 35px #1111110a}
+.admin-tabs{border-bottom:1px solid #e3e5e8}.admin-tabs button{border-radius:8px 8px 0 0}.admin-tabs button.active{background:#f3f4f6}
+.admin-table th{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#7b8188;background:#fafafa}.admin-table td{font-size:12px}
+@media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.stats>div:first-child{grid-column:1/-1}.admin-top h1{font-size:36px}}
+@media(max-width:560px){.stats{grid-template-columns:1fr}.stats>div:first-child{grid-column:auto}.stats>div{min-height:72px}.admin-top h1{font-size:32px}}
