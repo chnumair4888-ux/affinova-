@@ -8,6 +8,12 @@ query {
       type { kind name ofType { kind name ofType { kind name } } }
     }
   }
+  __type(name: "ShoppingProduct") {
+    fields {
+      name
+      type { kind name ofType { kind name ofType { kind name } } }
+    }
+  }
 }`;
 const res=await fetch(endpoint,{method:"POST",headers:{Authorization:"Bearer "+TOKEN,"Content-Type":"application/json"},body:JSON.stringify({query})});
 const raw=await res.text();
