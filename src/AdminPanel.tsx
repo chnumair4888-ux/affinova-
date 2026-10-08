@@ -12,7 +12,7 @@ async function uploadImage(file:File){
  const ext=file.name.split(".").pop()||"jpg"; const path=`products/${crypto.randomUUID()}.${ext}`;
  const {error}=await supabase.storage.from("affinova-media").upload(path,file,{upsert:false,contentType:file.type});
  if(error) throw error;
- return supabase.storage.from("product-images").getPublicUrl(path).data.publicUrl;
+ return supabase.storage.from("affinova-media").getPublicUrl(path).data.publicUrl;
 }
 
 function ProductForm({initial,categories,onSaved,onCancel}:{initial?:Product;categories:Category[];onSaved:()=>void;onCancel:()=>void}){
