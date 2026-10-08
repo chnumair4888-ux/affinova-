@@ -2,7 +2,7 @@ import {useEffect,useMemo,useState} from "react";
 import {supabase} from "./lib/supabase";
 import AdminPanel from "./AdminPanel";
 import type {Product,Category,Guide} from "./types";
-import {ArrowRight,BookOpen,ExternalLink,Heart,LayoutDashboard,LogIn,Menu,Search,ShieldCheck,Sparkles,Tag,X,ChevronLeft,ChevronRight} from "lucide-react";
+import {ArrowRight,BookOpen,ExternalLink,Heart,LayoutDashboard,LogIn,Menu,Search,ShieldCheck,Sparkles,Tag,X,ChevronLeft,ChevronRight,Package,FolderTree,FileText,Image,BarChart3,House,Settings,LogOut} from "lucide-react";
 import AdSlot from "./AdSlot";
 import AdminAnalytics from "./admin/AdminAnalytics";
 import AdminSettings from "./admin/AdminSettings";
@@ -105,16 +105,16 @@ function AdminNav({tab,view,open,setOpen}:{tab:string|null;view:string|null;open
   <div className="admin-mobile-head"><button className="admin-menu-btn" onClick={()=>setOpen(!open)} aria-label="Toggle admin menu">{open?<X size={21}/>:<Menu size={21}/>}</button><button className="admin-brand" onClick={()=>{setOpen(false);location.href="/admin"}}><span className="mark">A</span><span>Affinova</span></button></div>
   <div className="admin-brand-desktop"><button className="admin-brand" onClick={()=>{setOpen(false);location.href="/admin"}}><span className="mark">A</span><span>Affinova</span></button></div>
   <small>ADMIN CONTROL CENTER</small>
-  <a className={"side"+(!tab&&!view?" active":"")} href="/admin" onClick={()=>setOpen(false)}><LayoutDashboard size={16}/> Dashboard</a>
-  <a className={"side"+(tab==="products"?" active":"")} href="/admin?tab=products" onClick={()=>setOpen(false)}>Products</a>
-  <a className={"side"+(tab==="categories"?" active":"")} href="/admin?tab=categories" onClick={()=>setOpen(false)}>Categories</a>
-  <a className={"side"+(tab==="guides"?" active":"")} href="/admin?tab=guides" onClick={()=>setOpen(false)}>Guides</a>
-  <a className={"side"+(tab==="pages"?" active":"")} href="/admin?tab=pages" onClick={()=>setOpen(false)}>Pages</a>
-  <a className={"side"+(tab==="media"?" active":"")} href="/admin?tab=media" onClick={()=>setOpen(false)}>Media</a>
-  <a className={"side"+(view==="analytics"?" active":"")} href="/admin?view=analytics" onClick={()=>setOpen(false)}>Analytics</a>
-  <a className={"side"+(view==="homepage"?" active":"")} href="/admin?view=homepage" onClick={()=>setOpen(false)}>Homepage</a>
-  <a className={"side"+(view==="settings"?" active":"")} href="/admin?view=settings" onClick={()=>setOpen(false)}>Settings</a>
-  <button className="side signout" onClick={()=>supabase.auth.signOut()}>Sign out</button>
+  <a className={"side"+(!tab&&!view?" active":"")} href="/admin" onClick={()=>setOpen(false)}><LayoutDashboard size={17}/> <span>Dashboard</span></a>
+  <a className={"side"+(tab==="products"?" active":"")} href="/admin?tab=products" onClick={()=>setOpen(false)}><Package size={17}/> <span>Products</span></a>
+  <a className={"side"+(tab==="categories"?" active":"")} href="/admin?tab=categories" onClick={()=>setOpen(false)}><FolderTree size={17}/> <span>Categories</span></a>
+  <a className={"side"+(tab==="guides"?" active":"")} href="/admin?tab=guides" onClick={()=>setOpen(false)}><BookOpen size={17}/> <span>Guides</span></a>
+  <a className={"side"+(tab==="pages"?" active":"")} href="/admin?tab=pages" onClick={()=>setOpen(false)}><FileText size={17}/> <span>Pages</span></a>
+  <a className={"side"+(tab==="media"?" active":"")} href="/admin?tab=media" onClick={()=>setOpen(false)}><Image size={17}/> <span>Media</span></a>
+  <a className={"side"+(view==="analytics"?" active":"")} href="/admin?view=analytics" onClick={()=>setOpen(false)}><BarChart3 size={17}/> <span>Analytics</span></a>
+  <a className={"side"+(view==="homepage"?" active":"")} href="/admin?view=homepage" onClick={()=>setOpen(false)}><House size={17}/> <span>Homepage</span></a>
+  <a className={"side"+(view==="settings"?" active":"")} href="/admin?view=settings" onClick={()=>setOpen(false)}><Settings size={17}/> <span>Settings</span></a>
+  <button className="side signout" onClick={()=>supabase.auth.signOut()}><LogOut size={17}/> <span>Sign out</span></button>
  </aside>
 }
 
