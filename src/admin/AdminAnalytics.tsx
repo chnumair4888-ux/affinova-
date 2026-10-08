@@ -39,7 +39,7 @@ export default function AdminAnalytics(){
 
   const exportCsv=()=>{
     const rows=[["Product","Views","Clicks","CTR"],...products.map(p=>[p.title,String(p.views),String(p.clicks),String(p.ctr)])];
-    const csv=rows.map(row=>row.map(v=>`"\${String(v).replace(/"/g,'""')}"`).join(",")).join("\\n");
+    const csv=rows.map(row=>row.map(v=>"\"" + String(v).replace(/"/g,'""') + "\"").join(",")).join("\n");
     const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
     const url=URL.createObjectURL(blob),a=document.createElement("a");
     a.href=url;a.download="affinova-product-analytics-"+days+"d.csv";a.click();URL.revokeObjectURL(url);
