@@ -45,6 +45,8 @@ export default function AdminAnalytics(){
     a.href=url;a.download="affinova-product-analytics-"+days+"d.csv";a.click();URL.revokeObjectURL(url);
   };
 
+  const refresh=()=>{setDays(d=>d)};
+
   return <section className="admin-page">
     <div className="admin-toolbar">
       <div><h1>Analytics</h1><p>Real Affinova traffic and affiliate activity.</p></div>
@@ -52,7 +54,7 @@ export default function AdminAnalytics(){
         <select value={days} onChange={e=>setDays(Number(e.target.value))}>
           <option value="1">Today</option><option value="7">7 days</option><option value="30">30 days</option><option value="90">90 days</option>
         </select>
-        <button onClick={exportCsv} disabled={!products.length}>Export CSV</button>
+        <button onClick={refresh} disabled={loading}>{loading?"Loading...":"Refresh"}</button><button onClick={exportCsv} disabled={!products.length}>Export CSV</button>
       </div>
     </div>
     <div className="admin-stats">
