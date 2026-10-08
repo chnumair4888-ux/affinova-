@@ -7,7 +7,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!CJ_TOKEN) throw new Error("Missing CJ_API_TOKEN secret.");
 if (!SUPABASE_SERVICE_ROLE_KEY) throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY secret.");
 
-const keywords = ["electronics","gadgets","smart home","kitchen","home","gaming","toys","sports","fitness","beauty","fashion","office"];
+const keywords = ["Abelssoft","Ascora","electronics","gadgets","smart home","kitchen","home","gaming","toys","sports","fitness","beauty","fashion","office"];
 
 async function supabase(path, options = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
