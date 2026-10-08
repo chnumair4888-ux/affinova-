@@ -25,7 +25,7 @@ async function getVisitorCountry(){
     const res=await fetch("/cdn-cgi/trace",{cache:"no-store"});
     if(!res.ok) return null;
     const body=await res.text();
-    const match=body.match(/(?:^|\\n)loc=([A-Z]{2})(?:\\n|$)/);
+    const match=body.match(/(?:^|\n)loc=([A-Z]{2})(?:\n|$)/);
     const country=match?.[1]||null;
     if(country) sessionStorage.setItem(COUNTRY_KEY,country);
     return country;
