@@ -106,7 +106,6 @@ async function fetchLinkProducts(keyword) {
     "website-id": CJ_PID,
     "advertiser-ids": "joined",
     keywords: keyword,
-    "link-type": "Content",
     "records-per-page": "100",
     "page-number": "1",
   });
@@ -131,7 +130,7 @@ async function fetchLinkProducts(keyword) {
       linkType: link.linkType || "",
     })).filter(p => p.title || p.clickUrl || p.destinationUrl);
   }
-  const blocks = raw.match(/<link[^>]*>[\\s\\S]*?<\\/link>/gi) || [];
+  const blocks = raw.match(/<link[^>]*>[\s\S]*?<\/link>/gi) || [];
   return blocks.map(block => ({
     id: xmlValue(block, ["linkId", "id", "linkID"]),
     advertiserId: xmlValue(block, ["advertiserId", "advertiserID"]),
@@ -174,7 +173,7 @@ async function upsertProducts(products, categories) {
     const title = String(p.title || p.advertiserName || "").trim();
     const affiliateUrl = p.clickUrl || p.destinationUrl || null;
     if (!title || !affiliateUrl) continue;
-    const description = String(p.description || `${p.advertiserName || "CJ"} affiliate offer`).replace(/\\s+/g, " ").slice(0, 1000);
+    const description = String(p.description || `${p.advertiserName || "CJ"} affiliate offer`).replace(/\s+/g, " ").slice(0, 1000);
     rows.push({
       title,
       slug: `cj-${slugify(p.id || `${p.advertiserId}-${title}`)}`,
