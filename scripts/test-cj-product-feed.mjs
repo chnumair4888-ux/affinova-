@@ -2,7 +2,10 @@ const TOKEN=process.env.CJ_API_TOKEN;
 const endpoint="https://ads.api.cj.com/query";
 const query=`
 query {
-  shoppingType: __type(name: "Shopping") {
+  linkCodeType: __type(name: "LinkCode") {
+    fields { name type { kind name ofType { kind name ofType { kind name } } } }
+  }
+  amountType: __type(name: "AmountWithCurrency") {
     fields { name type { kind name ofType { kind name ofType { kind name } } } }
   }
   shoppingProducts(
@@ -30,7 +33,6 @@ query {
         joinedStatus
         targetCountry
         availability
-        linkCode { pid url }
       }
     }
   }
