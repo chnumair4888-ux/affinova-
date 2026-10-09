@@ -21,9 +21,8 @@ function useCurrency(){
   const listener=(next:string)=>setCurrency(next);
   currencyListeners.add(listener);
   if(!currencyStarted){currencyStarted=true;(async()=>{
-   const byCountry:Record<string,string>={PK:"PKR",US:"USD",GB:"GBP",CA:"CAD",AU:"AUD",NZ:"NZD",IN:"INR",BD:"BDT",AE:"AED",SA:"SAR",SG:"SGD",MY:"MYR",ID:"IDR",PH:"PHP",TH:"THB",VN:"VND",JP:"JPY",CN:"CNY",KR:"KRW",TR:"TRY",DE:"EUR",FR:"EUR",IT:"EUR",ES:"EUR",NL:"EUR",BE:"EUR",IE:"EUR",PT:"EUR",AT:"EUR",FI:"EUR",GR:"EUR",MX:"MXN",BR:"BRL",CH:"CHF",SE:"SEK",NO:"NOK",DK:"DKK",PL:"PLN",NG:"NGN",ZA:"ZAR",EG:"EGP"};
-   let target="USD";
-   try{const response=await fetch("https://ipapi.co/json/");if(response.ok){const locationData=await response.json();target=byCountry[String(locationData.country_code||"").toUpperCase()]||"USD";}}catch{}
+   // Global storefront: USD default; customers manually choose PKR or another currency.
+   const target="USD";
    try{const rateResponse=await fetch("https://open.er-api.com/v6/latest/USD");if(rateResponse.ok){const rateData=await rateResponse.json();if(rateData.result==="success"&&rateData.rates)currencyRates=rateData.rates;}}catch{}
    let saved:string|null=null;try{saved=localStorage.getItem("affinova_currency")}catch{}
    setDisplayCurrency(saved&&supportedCurrencies.includes(saved)?saved:target);
