@@ -86,9 +86,10 @@ function ProductImport({categories,onClose,onDone}:{categories:Category[];onClos
  const titleOf=(p:any)=>p.product_title||p.title||"AliExpress product";
  const parseMoney=(v:any)=>{if(v===null||v===undefined||v==="")return 0;const n=Number(String(v).replace(/[^0-9.\-]/g,""));return Number.isFinite(n)?n:0};
   // Use the regular listed sale price first. App/new-user promotional prices can be lower and are not a reliable public price.
-  const priceOf=(p:any)=>parseMoney(p.target_sale_price||p.target_app_sale_price||p.sale_price||p.app_sale_price||p.min_price||p.price||0);
- const originalOf=(p:any)=>parseMoney(p.target_original_price||p.original_price||p.app_original_price||p.original_price_with_currency||0);
- const currencyOf=(p:any)=>String(p.target_sale_price_currency||p.target_app_sale_price_currency||p.sale_price_currency||p.app_sale_price_currency||p.target_currency||p.currency||"USD").toUpperCase();
+  // Use public/listed sale price only. App-only promotional prices can be lower than the normal product price.
+ const priceOf=(p:any)=>parseMoney(p.target_sale_price||p.sale_price||p.min_price||p.price||0);
+ const originalOf=(p:any)=>parseMoney(p.target_original_price||p.original_price||p.original_price_with_currency||0);
+ const currencyOf=(p:any)=>String(p.target_sale_price_currency||p.sale_price_currency||p.target_currency||p.currency||"USD").toUpperCase();
  const sourceUrlOf=(p:any)=>p.product_detail_url||p.product_url||p.detail_url||p.product_url_with_protocol||"";
  const externalIdOf=(p:any)=>String(p.product_id||p.product_id_str||p.item_id||"");
  const ratingOf=(p:any)=>{const raw=String(p.star_rating??p.average_rating??p.rating??"").trim();if(!raw)return 0;const n=Number(raw);return Number.isFinite(n)?Math.min(5,Math.max(0,n)):0};
