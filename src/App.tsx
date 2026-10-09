@@ -1,12 +1,12 @@
-import {useEffect,useMemo,useState} from "react";
+import {lazy,Suspense,useEffect,useMemo,useState} from "react";
 import {supabase} from "./lib/supabase";
-import AdminPanel from "./AdminPanel";
+const AdminPanel=lazy(()=>import("./AdminPanel"));
 import type {Product,Category,Guide} from "./types";
 import {ArrowRight,BookOpen,ExternalLink,Heart,LayoutDashboard,LogIn,Menu,Search,ShieldCheck,Sparkles,Tag,X,ChevronLeft,ChevronRight,Package,FolderTree,FileText,Image,BarChart3,House,Settings,LogOut} from "lucide-react";
 import AdSlot from "./AdSlot";
-import AdminAnalytics from "./admin/AdminAnalytics";
-import AdminSettings from "./admin/AdminSettings";
-import AdminHomepageSections from "./admin/AdminHomepageSections";
+const AdminAnalytics=lazy(()=>import("./admin/AdminAnalytics"));
+const AdminSettings=lazy(()=>import("./admin/AdminSettings"));
+const AdminHomepageSections=lazy(()=>import("./admin/AdminHomepageSections"));
 import {trackClick,trackPageView,trackSearch} from "./lib/analytics";
 
 let displayCurrency="USD";
@@ -207,7 +207,7 @@ function Admin(){
  const title=tab==="products"?"Products":tab==="categories"?"Categories":tab==="guides"?"Guides":tab==="pages"?"Pages":tab==="media"?"Media":view==="analytics"?"Analytics":view==="homepage"?"Homepage":view==="settings"?"Settings":"Dashboard";
  let content:React.ReactNode;
  if(view==="analytics")content=<AdminAnalytics/>;else if(view==="settings")content=<AdminSettings/>;else if(view==="homepage")content=<AdminHomepageSections/>;else content=<AdminPanel/>;
- return <div className="admin-shell"><AdminNav tab={tab} view={view} open={menuOpen} setOpen={setMenuOpen}/><div className={menuOpen?"admin-menu-backdrop show":"admin-menu-backdrop"} onClick={()=>setMenuOpen(false)}/><section className="admin-main"><div className="admin-top"><div><span className="eyebrow">Control center</span><h1>{title}</h1><p className="admin-subtitle">Manage Affinova content, discovery and performance.</p></div><div className="admin-top-actions"><button className="admin-mobile-menu-trigger" onClick={()=>setMenuOpen(true)}><Menu size={18}/> Menu</button><button className="btn dark" onClick={()=>location.href="/"}>View site <ExternalLink size={14}/></button></div></div><div className="stats"><div><span>Signed in as</span><strong>{session.user.email}</strong></div><div><span>Role</span><strong>{role}</strong></div><div><span>Backend</span><strong>Supabase</strong></div></div>{content}</section></div>
+ return <div className="admin-shell"><AdminNav tab={tab} view={view} open={menuOpen} setOpen={setMenuOpen}/><div className={menuOpen?"admin-menu-backdrop show":"admin-menu-backdrop"} onClick={()=>setMenuOpen(false)}/><section className="admin-main"><div className="admin-top"><div><span className="eyebrow">Control center</span><h1>{title}</h1><p className="admin-subtitle">Manage Affinova content, discovery and performance.</p></div><div className="admin-top-actions"><button className="admin-mobile-menu-trigger" onClick={()=>setMenuOpen(true)}><Menu size={18}/> Menu</button><button className="btn dark" onClick={()=>location.href="/"}>View site <ExternalLink size={14}/></button></div></div><div className="stats"><div><span>Signed in as</span><strong>{session.user.email}</strong></div><div><span>Role</span><strong>{role}</strong></div><div><span>Backend</span><strong>Supabase</strong></div></div><Suspense fallback={<div className="notice">Loading admin module…</div>}>{content}</Suspense></section></div>
 }
 export default function App(){
  const publicSlug=location.pathname.startsWith("/about")?"about":location.pathname.startsWith("/contact")?"contact":location.pathname.startsWith("/privacy")?"privacy":location.pathname.startsWith("/terms")?"terms":location.pathname.startsWith("/affiliate-disclosure")?"affiliate-disclosure":null;
