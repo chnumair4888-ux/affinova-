@@ -47,7 +47,8 @@ as $$
     group by product_id
   ) c on c.product_id = p.id
   where (select private.is_admin())
-  order by coalesce(c.clicks, 0) desc, p.title asc;
+  order by coalesce(c.clicks, 0) desc, p.title asc
+  limit 50;
 $$;
 
 revoke all on function public.admin_product_stats_range(timestamptz, timestamptz) from public;
