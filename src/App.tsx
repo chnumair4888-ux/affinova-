@@ -13,6 +13,7 @@ let displayCurrency="USD";
 let currencyRates:Record<string,number>={USD:1};
 let currencyStarted=false;
 const currencyListeners=new Set<(currency:string)=>void>();
+const supportedCurrencies=["USD","PKR","GBP","EUR","CAD","AUD","NZD","INR","BDT","AED","SAR","SGD","MYR","IDR","PHP","THB","VND","JPY","CNY","KRW","TRY","MXN","BRL","CHF","SEK","NOK","DKK","PLN","NGN","ZAR","EGP"];
 const setDisplayCurrency=(currency:string,rates?:Record<string,number>)=>{displayCurrency=currency;if(rates)currencyRates=rates;currencyListeners.forEach(fn=>fn(currency));};
 function useCurrency(){
  const [currency,setCurrency]=useState(displayCurrency);
@@ -20,21 +21,20 @@ function useCurrency(){
   const listener=(next:string)=>setCurrency(next);
   currencyListeners.add(listener);
   if(!currencyStarted){currencyStarted=true;(async()=>{
-   try{
-    const response=await fetch("https://ipapi.co/json/");
-    if(response.ok){const locationData=await response.json();const country=String(locationData.country_code||"").toUpperCase();const byCountry:Record<string,string>={PK:"PKR",US:"USD",GB:"GBP",CA:"CAD",AU:"AUD",NZ:"NZD",IN:"INR",BD:"BDT",AE:"AED",SA:"SAR",SG:"SGD",MY:"MYR",ID:"IDR",PH:"PHP",TH:"THB",VN:"VND",JP:"JPY",CN:"CNY",KR:"KRW",TR:"TRY",DE:"EUR",FR:"EUR",IT:"EUR",ES:"EUR",NL:"EUR",BE:"EUR",IE:"EUR",PT:"EUR",AT:"EUR",FI:"EUR",GR:"EUR",MX:"MXN",BR:"BRL",CH:"CHF",SE:"SEK",NO:"NOK",DK:"DKK",PL:"PLN",NG:"NGN",ZA:"ZAR",EG:"EGP"};
-    const target=byCountry[country]||"USD";
-    const saved=localStorage.getItem("affinova_currency");
-    const chosen=saved||target;
-    const rateResponse=await fetch("https://open.er-api.com/v6/latest/USD");
-    if(rateResponse.ok){const rateData=await rateResponse.json();if(rateData.result==="success"&&rateData.rates){currencyRates=rateData.rates;}}
-    setDisplayCurrency(chosen);
-   }else setDisplayCurrency(localStorage.getItem("affinova_currency")||"USD");
-   }catch{setDisplayCurrency(localStorage.getItem("affinova_currency")||"USD");}
+   const byCountry:Record<string,string>={PK:"PKR",US:"USD",GB:"GBP",CA:"CAD",AU:"AUD",NZ:"NZD",IN:"INR",BD:"BDT",AE:"AED",SA:"SAR",SG:"SGD",MY:"MYR",ID:"IDR",PH:"PHP",TH:"THB",VN:"VND",JP:"JPY",CN:"CNY",KR:"KRW",TR:"TRY",DE:"EUR",FR:"EUR",IT:"EUR",ES:"EUR",NL:"EUR",BE:"EUR",IE:"EUR",PT:"EUR",AT:"EUR",FI:"EUR",GR:"EUR",MX:"MXN",BR:"BRL",CH:"CHF",SE:"SEK",NO:"NOK",DK:"DKK",PL:"PLN",NG:"NGN",ZA:"ZAR",EG:"EGP"};
+   let target="USD";
+   try{const response=await fetch("https://ipapi.co/json/");if(response.ok){const locationData=await response.json();target=byCountry[String(locationData.country_code||"").toUpperCase()]||"USD";}}catch{}
+   try{const rateResponse=await fetch("https://open.er-api.com/v6/latest/USD");if(rateResponse.ok){const rateData=await rateResponse.json();if(rateData.result==="success"&&rateData.rates)currencyRates=rateData.rates;}}catch{}
+   let saved:string|null=null;try{saved=localStorage.getItem("affinova_currency")}catch{}
+   setDisplayCurrency(saved&&supportedCurrencies.includes(saved)?saved:target);
   })();}
   return()=>{currencyListeners.delete(listener)};
  },[]);
  return currency;
+}
+function CurrencyControl(){
+ const currency=useCurrency();
+ return <label className="currency-control" aria-label="Display currency"><span>Currency</span><select value={currency} onChange={e=>{const next=e.target.value;try{localStorage.setItem("affinova_currency",next)}catch{}setDisplayCurrency(next)}}>{supportedCurrencies.map(code=><option value={code} key={code}>{code}</option>)}</select></label>;
 }
 const money=(n:number,c:string)=>{const source=c||"USD";const amount=currencyRates[source]&&currencyRates[displayCurrency]?n/currencyRates[source]*currencyRates[displayCurrency]:n;try{return new Intl.NumberFormat(undefined,{style:"currency",currency:displayCurrency}).format(amount)}catch{return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(n)}};
 const productImage=(p:Product)=>p.image_url||p.images?.[0]||"";
@@ -98,6 +98,7 @@ function Header({query,setQuery,products,categories,savedCount,compareCount}:{qu
    <div className="container nav">
     <button className="menu" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button>
     <a className="brand" href="/"><span className="mark">A</span><span>Affinova</span></a>
+    <CurrencyControl/>
     <nav className={menu?"links open":"links"}>
      <a href="/#products" onClick={()=>setMenu(false)}>Shop</a><a href="/#categories" onClick={()=>setMenu(false)}>Categories</a><a href="/#deals" onClick={()=>setMenu(false)}>Deals</a><a href="/#guides" onClick={()=>setMenu(false)}>Guides</a><a href="/about" onClick={()=>setMenu(false)}>About</a>
      {savedCount>0&&<a href="#saved" onClick={()=>setMenu(false)}>Saved ({savedCount})</a>}{compareCount>0&&<a href="#compare" onClick={()=>setMenu(false)}>Compare ({compareCount})</a>}
