@@ -7,6 +7,8 @@ import AdSlot from "./AdSlot";
 const AdminAnalytics=lazy(()=>import("./admin/AdminAnalytics"));
 const AdminSettings=lazy(()=>import("./admin/AdminSettings"));
 const AdminHomepageSections=lazy(()=>import("./admin/AdminHomepageSections"));
+const ProductPage=lazy(()=>import("./DetailPages").then(m=>({default:m.ProductPage})));
+const GuidePage=lazy(()=>import("./DetailPages").then(m=>({default:m.GuidePage})));
 import {trackClick,trackPageView,trackSearch} from "./lib/analytics";
 
 let displayCurrency="USD";
@@ -219,5 +221,9 @@ export default function App(){
  },[location.pathname,location.search]);
  if(location.pathname.startsWith("/admin")) return <Admin/>;
  if(publicSlug) return <PublicPage slug={publicSlug}/>;
+ const productSlug=location.pathname.startsWith("/product/")?decodeURIComponent(location.pathname.split("/")[2]||""):null;
+ if(productSlug)return <Suspense fallback={<div className="detail-page"><div className="container empty">Loading product page…</div></div>}><ProductPage slug={productSlug}/></Suspense>;
+ const guideSlug=location.pathname.startsWith("/guide/")?decodeURIComponent(location.pathname.split("/")[2]||""):null;
+ if(guideSlug)return <Suspense fallback={<div className="detail-page"><div className="container empty">Loading guide…</div></div>}><GuidePage slug={guideSlug}/></Suspense>;
  return <Home/>
 }
