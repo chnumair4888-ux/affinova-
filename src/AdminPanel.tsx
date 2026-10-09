@@ -82,8 +82,8 @@ function ProductImport({categories,onClose,onDone}:{categories:Category[];onClos
  const trackingId="Affinova";
  const imageOf=(p:any)=>p.product_main_image_url||p.product_small_image_urls?.string?.[0]||p.product_small_image_urls?.[0]||p.product_images?.string?.[0]||p.product_images?.[0]||p.image_url||p.image||"";
  const titleOf=(p:any)=>p.product_title||p.title||"AliExpress product";
- const priceOf=(p:any)=>Number(p.target_sale_price||p.app_sale_price||p.sale_price||p.target_app_sale_price||p.min_price||p.price||0);
- const originalOf=(p:any)=>Number(p.target_original_price||p.app_original_price||p.original_price||p.original_price_with_currency||0);
+ const priceOf=(p:any)=>Number(p.app_sale_price||p.sale_price||p.target_app_sale_price||p.target_sale_price||p.min_price||p.price||0);
+ const originalOf=(p:any)=>Number(p.app_original_price||p.original_price||p.original_price_with_currency||p.target_original_price||0);
  const currencyOf=(p:any)=>String(p.target_sale_price_currency||p.app_sale_price_currency||p.sale_price_currency||p.target_currency||p.currency||"USD").toUpperCase();
  const sourceUrlOf=(p:any)=>p.product_detail_url||p.product_url||p.detail_url||p.product_url_with_protocol||"";
  const externalIdOf=(p:any)=>String(p.product_id||p.product_id_str||p.item_id||"");
