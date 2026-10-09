@@ -22,7 +22,7 @@ function useCurrency(){
   if(!currencyStarted){currencyStarted=true;(async()=>{
    try{
     const response=await fetch("https://ipapi.co/json/");
-    if(response.ok){const locationData=await response.json();const country=String(locationData.country_code||"").toUpperCase();const byCountry:Record<string,string>={PK:"PKR",US:"USD",GB:"GBP",CA:"CAD",AU:"AUD",NZ:"NZD",IN:"IN:"INR",BD:"BDT",AE:"AED",SA:"SAR",SG:"SGD",MY:"MYR",ID:"IDR",PH:"PHP",TH:"THB",VN:"VND",JP:"JPY",CN:"CNY",KR:"KRW",TR:"TRY",DE:"EUR",FR:"EUR",IT:"EUR",ES:"EUR",NL:"EUR",BE:"EUR",IE:"EUR",PT:"EUR",AT:"EUR",FI:"EUR",GR:"EUR",MX:"MXN",BR:"BRL",CH:"CHF",SE:"SEK",NO:"NOK",DK:"DKK",PL:"PLN",NG:"NGN",ZA:"ZAR",EG:"EGP"};
+    if(response.ok){const locationData=await response.json();const country=String(locationData.country_code||"").toUpperCase();const byCountry:Record<string,string>={PK:"PKR",US:"USD",GB:"GBP",CA:"CAD",AU:"AUD",NZ:"NZD",IN:"INR",BD:"BDT",AE:"AED",SA:"SAR",SG:"SGD",MY:"MYR",ID:"IDR",PH:"PHP",TH:"THB",VN:"VND",JP:"JPY",CN:"CNY",KR:"KRW",TR:"TRY",DE:"EUR",FR:"EUR",IT:"EUR",ES:"EUR",NL:"EUR",BE:"EUR",IE:"EUR",PT:"EUR",AT:"EUR",FI:"EUR",GR:"EUR",MX:"MXN",BR:"BRL",CH:"CHF",SE:"SEK",NO:"NOK",DK:"DKK",PL:"PLN",NG:"NGN",ZA:"ZAR",EG:"EGP"};
     const target=byCountry[country]||"USD";
     const saved=localStorage.getItem("affinova_currency");
     const chosen=saved||target;
