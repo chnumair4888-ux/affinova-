@@ -8,7 +8,7 @@ const fields=[
  {key:"social",title:"Social",items:[["facebook","Facebook URL","url"],["instagram","Instagram URL","url"],["youtube","YouTube URL","url"],["x","X / Twitter URL","url"]]},
  {key:"footer",title:"Footer",items:[["text","Footer text","textarea"]]},
  {key:"affiliate",title:"Affiliate disclosure",items:[["disclosure","Disclosure text","textarea"]]},
- {key:"appearance",title:"Appearance",items:[["theme","Theme (system/light/dark)","theme"],["primary_color","Primary color","color"]]},
+ {key:"appearance",title:"Appearance",items:[["primary_color","Primary color","color"]]},
  {key:"integrations",title:"Integrations",items:[["analytics_id","Analytics ID","text"],["adsense_home_slot","AdSense home slot","text"]]}
 ] as const;
 
