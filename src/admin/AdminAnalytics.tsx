@@ -15,12 +15,14 @@ export default function AdminAnalytics(){
 
   const load=useCallback(async()=>{
     setLoading(true);
+    setError("");
     const end=new Date(),start=new Date(Date.now()-days*86400000);
     const [summary,stats,countryStats]=await Promise.all([
       supabase.rpc("admin_analytics_summary",{p_start:start.toISOString(),p_end:end.toISOString()}),
       supabase.from("admin_product_stats").select("id,title,views,clicks,ctr").order("clicks",{ascending:false}).limit(50),
       supabase.rpc("admin_country_stats",{p_start:start.toISOString(),p_end:end.toISOString()})
     ]);
+    if(summary.error||stats.error||countryStats.error){setError(summary.error?.message||stats.error?.message||countryStats.error?.message||"Could not load analytics.");}else{setError("");}
     setData((summary.data||null) as Stat|null);
     setProducts((stats.data||[]) as ProductStat[]);
     setCountries((countryStats.data||[]) as CountryStat[]);
