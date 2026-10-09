@@ -1,4 +1,4 @@
-import {writeFileSync,mkdirSync} from "node:fs";
+import {writeFileSync,mkdirSync,readFileSync} from "node:fs";
 
 const site="https://affinova.cyou";
 const urls=new Set(["/","/about","/privacy","/terms","/affiliate-disclosure","/contact"]);
@@ -17,6 +17,17 @@ if(base&&key){
   }
   await add("products?select=slug&is_active=eq.true","/product");
   await add("guides?select=slug&is_published=eq.true","/guide");
+}
+
+if(!base||!key){
+  // Keep the last committed product/guide URLs in build environments without Supabase variables.
+  try{
+    const existing=readFileSync("public/sitemap.xml","utf8");
+    for(const match of existing.matchAll(/<loc>(https:\/\/affinova\.cyou[^<]*)<\/loc>/g)){
+      const path=match[1].slice(site.length);
+      if(path.startsWith("/"))urls.add(path);
+    }
+  }catch{}
 }
 
 const body=[...urls].map(path=>"<url><loc>"+site+path+"</loc></url>").join("\n");
