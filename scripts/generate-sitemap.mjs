@@ -1,6 +1,6 @@
 import {writeFileSync,mkdirSync} from "node:fs";
 
-const site="https://affinova.site";
+const site="https://affinova.cyou";
 const urls=new Set(["/","/about","/privacy","/terms","/affiliate-disclosure","/contact"]);
 const base=process.env.VITE_SUPABASE_URL;
 const key=process.env.VITE_SUPABASE_PUBLISHABLE_KEY||process.env.VITE_SUPABASE_ANON_KEY;
