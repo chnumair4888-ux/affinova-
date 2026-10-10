@@ -98,7 +98,7 @@ function Header({query,setQuery,products,categories,savedCount,compareCount,site
   <header className="header">
    <div className="container nav">
     <button className="menu" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button>
-    <a className="brand" href="/"><span className="mark">A</span><span>{siteName}</span></a>
+    <a className="brand" href="/" aria-label={siteName+" home"}><img className="brand-mark" src="/affinova-mark.svg" alt="" width="34" height="34"/><span>{siteName}</span></a>
     <CurrencyControl/>
     <nav className={menu?"links open":"links"}>
      <a href="/#products" onClick={()=>setMenu(false)}>Shop</a><a href="/#categories" onClick={()=>setMenu(false)}>Categories</a><a href="/#deals" onClick={()=>setMenu(false)}>Deals</a><a href="/#guides" onClick={()=>setMenu(false)}>Guides</a><a href="/about" onClick={()=>setMenu(false)}>About</a>
