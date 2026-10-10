@@ -9,7 +9,7 @@ const fields=[
  {key:"footer",title:"Footer",items:[["text","Footer text","textarea"]]},
  {key:"affiliate",title:"Affiliate disclosure",items:[["disclosure","Disclosure text","textarea"]]},
  {key:"appearance",title:"Appearance",items:[["primary_color","Primary color","color"]]},
- {key:"integrations",title:"Integrations",items:[["adsense_home_slot","AdSense home slot","text"]]}
+ {key:"integrations",title:"Integrations",items:[["adsense_home_slot","AdSense home slot","text"],["adsense_detail_slot","AdSense product-detail slot","text"],["adsense_guide_slot","AdSense buying-guide slot","text"]]}
 ] as const;
 
 export default function AdminSettings(){
