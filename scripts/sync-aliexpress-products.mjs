@@ -12,7 +12,30 @@ async function supabase(path, options = {}) { const res = await fetch(SUPABASE_U
 function sign(params){ const plain=Object.keys(params).filter(k=>k!=="sign").sort().map(k=>k+params[k]).join(""); return crypto.createHmac("md5",APP_SECRET).update(plain,"utf8").digest("hex").toUpperCase(); }
 const text=v=>v==null?"":String(v).trim(); const first=(...v)=>v.find(x=>text(x))||""; const arr=v=>Array.isArray(v)?v:(v?[v]:[]);
 const get=(o,...keys)=>{for(const k of keys){if(o&&o[k]!=null)return o[k]}return ""};
-async function query(keyword){ const timestamp=new Date().toISOString().replace("T"," ").replace(/\.\d{3}Z$/,""); const params={app_key:APP_KEY,format:"json",method:"aliexpress.affiliate.product.query",partner_id:"affinova",sign_method:"hmac",timestamp,v:"2.0",keywords:keyword,page_no:"1",page_size:"50",target_currency:"USD",target_language:"EN",tracking_id:TRACKING_ID,ship_to_country:"PK"}; params.sign=sign(params); const res=await fetch(API,{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded;charset=UTF-8"},body:new URLSearchParams(params)}); const raw=await res.text(); if(!res.ok)throw new Error("AliExpress HTTP "+res.status+": "+raw.slice(0,2000)); let json; try{json=JSON.parse(raw)}catch{throw new Error("AliExpress returned non-JSON: "+raw.slice(0,1000))}; const err=json?.error_response||json?.errorResponse; if(err)throw new Error("AliExpress API error: "+JSON.stringify(err).slice(0,1800)); return json?.aliexpress_affiliate_product_query_response?.resp_result||json?.aliexpress_affiliate_product_query_response?.result||json?.result||{}; }
+async function fetchWithRetry(url, options, label) {
+  const maxAttempts = 4;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await fetch(url, { ...options, signal: AbortSignal.timeout(30000) });
+      if ((res.status === 429 || res.status >= 500) && attempt < maxAttempts) {
+        const waitMs = attempt * 3000;
+        console.warn(label + " HTTP " + res.status + "; retry " + (attempt + 1) + "/" + maxAttempts + " in " + waitMs + "ms");
+        await new Promise(r => setTimeout(r, waitMs));
+        continue;
+      }
+      return res;
+    } catch (error) {
+      if (attempt >= maxAttempts) {
+        throw new Error(label + " connection failed after " + maxAttempts + " attempts: " + (error?.cause?.code || error?.code || error?.message || "unknown network error"));
+      }
+      const waitMs = attempt * 3000;
+      console.warn(label + " network error (" + (error?.cause?.code || error?.code || error?.message || "unknown") + "); retry " + (attempt + 1) + "/" + maxAttempts + " in " + waitMs + "ms");
+      await new Promise(r => setTimeout(r, waitMs));
+    }
+  }
+  throw new Error(label + " request failed after retries.");
+}
+async function query(keyword){ const timestamp=new Date().toISOString().replace("T"," ").replace(/\.\d{3}Z$/,""); const params={app_key:APP_KEY,format:"json",method:"aliexpress.affiliate.product.query",partner_id:"affinova",sign_method:"hmac",timestamp,v:"2.0",keywords:keyword,page_no:"1",page_size:"50",target_currency:"USD",target_language:"EN",tracking_id:TRACKING_ID,ship_to_country:"PK"}; params.sign=sign(params); const res=await fetchWithRetry(API,{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded;charset=UTF-8"},body:new URLSearchParams(params)},"AliExpress API"); const raw=await res.text(); if(!res.ok)throw new Error("AliExpress HTTP "+res.status+": "+raw.slice(0,2000)); let json; try{json=JSON.parse(raw)}catch{throw new Error("AliExpress returned non-JSON: "+raw.slice(0,1000))}; const err=json?.error_response||json?.errorResponse; if(err)throw new Error("AliExpress API error: "+JSON.stringify(err).slice(0,1800)); return json?.aliexpress_affiliate_product_query_response?.resp_result||json?.aliexpress_affiliate_product_query_response?.result||json?.result||{}; }
 function extractProducts(result){ const candidates=[result?.result?.products?.product,result?.products?.product,result?.products,result?.result?.products,result?.data?.products]; for(const c of candidates){const a=arr(c);if(a.length)return a;} return []; }
 async function loadCategories(){return supabase("categories?select=id,name,slug&is_active=eq.true");}
 function pickCategory(p,categories){ const s=[get(p,"product_title","productTitle"),get(p,"first_level_category_name","firstLevelCategoryName"),get(p,"second_level_category_name","secondLevelCategoryName")].join(" ").toLowerCase(); const rules=[["gaming",["gaming","game","playstation","xbox","nintendo","controller","console"]],["toys",["toy","lego","doll","puzzle","kids","playset"]],["sports",["sport","fitness","gym","running","football","basketball","yoga","cycling"]],["kitchen",["kitchen","cook","coffee","blender","mixer","utensil","pan"]],["home",["home","furniture","decor","storage","cleaning"]],["electronics",["electronic","gadget","phone","tablet","laptop","computer","camera","headphone","speaker","charger","watch","smart"]]]; for(const [key,words] of rules){if(words.some(w=>s.includes(w))){const c=categories.find(x=>String(x.slug||x.name).toLowerCase().includes(key));if(c)return c.id;}} return null; }
