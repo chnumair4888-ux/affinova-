@@ -186,3 +186,40 @@
  .form-actions{position:sticky;bottom:-18px;background:#0c1b2d;padding:12px 0 0}
  .login{padding:25px;border-radius:20px}
 }
+
+
+/* Mobile admin redesign: reinforce theme across every existing admin control. */
+.admin-shell,.admin-page{background:#07111f!important;color:#f2f8ff!important}
+.admin-shell *{scrollbar-color:#29435d #07111f}
+.admin-shell aside{background:#091625!important;color:#f2f8ff!important}
+.admin-shell aside .brand,.admin-shell aside .brand *{color:#f2f8ff!important}
+.admin-main,.admin-main h1,.admin-main h2,.admin-main h3,.admin-main p,.admin-main label{color:#eaf4ff}
+.admin-main .eyebrow,.admin-main .muted,.admin-main small{color:#8faaca}
+.stats>div,.catalog-admin,.admin-table,.admin-table table,.admin-main .empty,.admin-main .notice,.admin-main .panel,.admin-main section{background:#0c1b2d;color:#eaf4ff;border-color:#1b3550}
+.admin-main input:not([type=checkbox]):not([type=radio]),.admin-main select,.admin-main textarea,.product-form input,.product-form select,.product-form textarea{background:#071625!important;color:#f2f8ff!important;border:1px solid #29435d!important}
+.admin-main input::placeholder,.admin-main textarea::placeholder{color:#7895b5}
+.admin-main button,.product-form button{transition:background .15s,border-color .15s,transform .15s}
+.admin-main button:focus-visible,.product-form button:focus-visible,.admin-main input:focus-visible,.admin-main select:focus-visible,.admin-main textarea:focus-visible{outline:2px solid #42e7c0;outline-offset:2px}
+.admin-main .btn.primary,.admin-main button.primary,.product-form .btn.primary{background:#42e7c0!important;color:#062720!important;border-color:#42e7c0!important}
+.admin-main .btn:not(.primary),.admin-main button:not(.primary),.product-form .btn:not(.primary){border-radius:12px}
+.admin-table table{min-width:620px}
+.admin-table th{background:#102239;color:#9bb1ca}
+.admin-table td{color:#e5effa}
+.admin-table tr:hover td{background:#102239}
+.status{background:#173047;color:#d6e8fa}
+.status.good{background:#103b37;color:#62f0cb}
+.modal-backdrop{padding:12px}
+.product-form{max-width:850px;width:100%;max-height:calc(100dvh - 24px);overflow:auto}
+@media(max-width:760px){
+ .admin-shell{display:block!important}
+ .admin-shell aside{overflow-x:auto;overscroll-behavior-x:contain}
+ .admin-main{padding:20px 14px 32px!important;min-width:0}
+ .admin-top{gap:12px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .catalog-admin{min-width:0;overflow:hidden}
+ .catalog-head{align-items:flex-start;flex-wrap:wrap}
+ .admin-table{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .admin-tabs{max-width:100%;overflow-x:auto}
+ .product-form{padding:16px!important}
+ .form-actions .btn{min-height:44px}
+}
