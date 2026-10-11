@@ -1,0 +1,20 @@
+{
+  "id": "/admin",
+  "name": "Affinova Admin",
+  "short_name": "Affinova Admin",
+  "description": "Manage Affinova products, content and analytics.",
+  "start_url": "/admin",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#17191e",
+  "theme_color": "#17191e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/affinova-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
