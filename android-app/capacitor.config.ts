@@ -1,6 +1,6 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-// Rebuild the local Affinova mobile shell after the responsive admin styling update.
+// Rebuild local Affinova mobile shell after navy/mint admin workspace refresh; preserve the existing hosted admin features.
 const config: CapacitorConfig = {
   appId: 'com.affinova.admin',
   appName: 'Affinova',
