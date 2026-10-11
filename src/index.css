@@ -126,3 +126,63 @@
 
 /* Global currency picker */
 .currency-control{display:flex;align-items:center;gap:5px;flex:0 0 auto;font-size:10px;color:#777;font-weight:700;letter-spacing:.04em}.currency-control select{min-width:72px;max-width:92px;padding:8px 7px;border:1px solid #ddd9d0;background:#fff;color:#171717;border-radius:2px;font:600 11px inherit;cursor:pointer}.nav .currency-control{margin-left:auto}@media(max-width:800px){.nav .currency-control{margin-left:0}.currency-control span{display:none}.currency-control select{min-width:68px;padding:7px 4px}}
+
+
+/* Affinova dark mobile admin workspace */
+.admin-shell{background:#07111f;color:#f2f8ff}
+.admin-shell aside{background:#091625;border-right:1px solid #1b3550}
+.admin-shell aside small{color:#7895b5}
+.side{color:#91a9c5;border-radius:12px;padding:12px;background:transparent}
+.side.active,.side:hover{background:#103344;color:#42e7c0}
+.admin-main{background:radial-gradient(ellipse at 95% 0%,#172d48 0,transparent 36%),#07111f;color:#f2f8ff}
+.admin-top .eyebrow,.admin-top .muted{color:#8faaca}
+.admin-top h1,.catalog-head h2{color:#f2f8ff}
+.stats>div,.catalog-admin,.admin-table table,.empty,.notice{background:#0c1b2d;color:#f2f8ff;border-color:#1b3550}
+.stats span,.admin-table td small,.muted{color:#8faaca}
+.admin-tabs{border-color:#1b3550}
+.admin-tabs button{color:#9bb1ca}
+.admin-tabs button.active{color:#42e7c0;border-bottom-color:#42e7c0}
+.admin-table th,.admin-table td{border-color:#1b3550;color:#e5effa}
+.admin-table tr:hover td{background:#102239}
+.admin-table input,.admin-table select,.admin-main input,.admin-main select,.admin-main textarea{background:#0a192a;color:#f2f8ff;border-color:#29435d;border-radius:10px}
+.admin-main .btn,.admin-main button.primary,.catalog-admin .btn{border-radius:12px}
+.admin-main .btn.primary,.admin-main button.primary{background:#42e7c0;color:#062720;border:0}
+.admin-main .btn:not(.primary){background:#102239;color:#e5effa;border:1px solid #29435d}
+.modal-backdrop{background:#020812c9;backdrop-filter:blur(8px)}
+.product-form{background:#0c1b2d;color:#f2f8ff;border:1px solid #29435d;border-radius:22px;box-shadow:0 24px 80px #0008}
+.product-form h2{color:#f2f8ff}
+.product-form label{color:#c6d7e9}
+.product-form input,.product-form textarea,.product-form select{background:#071625;color:#f2f8ff;border-color:#29435d;border-radius:10px}
+.product-form input:focus,.product-form textarea:focus,.product-form select:focus{border-color:#42e7c0}
+.product-form .close{background:#102239;color:#eaf4ff;border:1px solid #29435d;border-radius:12px}
+.form-actions{border-color:#1b3550}
+.checks label{color:#d5e4f3}
+.login{background:#0c1b2d;color:#f2f8ff;border-color:#29435d;border-radius:22px}
+.login h1{color:#f2f8ff}
+.login p{color:#9bb1ca}
+.login input{background:#071625;color:#f2f8ff;border-color:#29435d;border-radius:10px}
+.login-divider{border-color:#29435d}
+.login-divider span{background:#0c1b2d;color:#8faaca}
+@media(max-width:760px){
+ .admin-shell{display:block;min-height:100vh}
+ .admin-shell aside{padding:15px 17px;position:sticky;top:0;z-index:30;flex-direction:row;align-items:center;gap:8px;overflow-x:auto;border-right:0;border-bottom:1px solid #1b3550}
+ .admin-shell aside .brand{font-size:18px;margin:0 10px 0 0;flex-shrink:0}
+ .admin-shell aside small{display:none}
+ .side{padding:10px 12px;white-space:nowrap;font-size:12px;flex-shrink:0}
+ .admin-main{padding:22px 16px 34px}
+ .admin-top{align-items:flex-start;gap:12px;flex-direction:column;margin-bottom:20px}
+ .admin-top h1{font-size:34px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .stats>div{padding:15px;border-radius:16px;min-width:0}
+ .catalog-admin{padding:15px;border-radius:18px}
+ .catalog-head{align-items:flex-start;gap:12px;flex-direction:column}
+ .catalog-head h2{font-size:26px}
+ .admin-tabs{overflow-x:auto;white-space:nowrap}
+ .admin-tabs button{flex-shrink:0;padding:12px 10px}
+ .admin-table th,.admin-table td{padding:11px 9px;font-size:11px}
+ .product-form{width:min(100%,620px);max-height:92dvh;overflow:auto;padding:18px;border-radius:20px}
+ .form-grid{grid-template-columns:1fr!important}
+ .form-grid .wide{grid-column:auto!important}
+ .form-actions{position:sticky;bottom:-18px;background:#0c1b2d;padding:12px 0 0}
+ .login{padding:25px;border-radius:20px}
+}
