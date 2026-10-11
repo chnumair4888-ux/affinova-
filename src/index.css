@@ -301,3 +301,37 @@
  .catalog-admin .row-actions{display:flex;gap:6px;flex-wrap:wrap}
  .product-form{width:100%!important;max-width:100%!important;max-height:90dvh!important;overflow:auto!important}
 }
+
+
+/* Affinova admin visual refresh: scope to admin content only; preserve all React handlers/data calls. */
+.catalog-admin{background:#07111f!important;color:#edf7ff!important;border:1px solid #1b3550!important;border-radius:22px!important;padding:20px!important;box-shadow:0 12px 34px #0003!important}
+.catalog-admin h1,.catalog-admin h2,.catalog-admin h3,.catalog-admin strong,.catalog-admin label{color:#edf7ff!important}
+.catalog-admin .catalog-head p,.catalog-admin .eyebrow,.catalog-admin .admin-kpis span,.catalog-admin .admin-kpis small,.catalog-admin .admin-table td small{color:#91abc8!important}
+.catalog-admin .admin-kpis{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.catalog-admin .admin-kpis>div{min-width:0;background:linear-gradient(145deg,#10243a,#0a192a)!important;color:#edf7ff!important;border:1px solid #1b3550!important;border-radius:18px!important;padding:16px!important}
+.catalog-admin .admin-kpis strong{display:block;font-size:27px;color:#42e7c0!important}
+.catalog-admin .admin-tabs{display:flex;gap:6px;overflow-x:auto;padding:6px;background:#081625!important;border:1px solid #1b3550!important;border-radius:14px}
+.catalog-admin .admin-tabs button{flex:0 0 auto;background:transparent!important;color:#a9bfd8!important;border:0!important;border-radius:10px;padding:11px 14px;white-space:nowrap}
+.catalog-admin .admin-tabs button.active{background:#103b3a!important;color:#42e7c0!important}
+.catalog-admin .search{display:flex;align-items:center;gap:8px;min-width:0;background:#091827!important;border:1px solid #29435d!important;border-radius:11px;padding:9px 11px;color:#42e7c0!important}
+.catalog-admin .search input{width:100%;min-width:0;background:transparent!important;color:#edf7ff!important;border:0!important;outline:none}
+.catalog-admin select,.catalog-admin input:not([type=checkbox]),.catalog-admin textarea{background:#091827!important;color:#edf7ff!important;border:1px solid #29435d!important;border-radius:10px!important;padding:10px}
+.catalog-admin input[type=checkbox]{accent-color:#42e7c0}
+.catalog-admin .admin-table{overflow-x:auto;background:#091827!important;border:1px solid #1b3550!important;border-radius:15px!important}
+.catalog-admin .admin-table table{width:100%;border-collapse:collapse}
+.catalog-admin .admin-table th{background:#10243a!important;color:#9bb4cf!important;text-align:left;font-size:12px}
+.catalog-admin .admin-table th,.catalog-admin .admin-table td{padding:12px;border-bottom:1px solid #1b3550!important;color:#eaf4ff!important}
+.catalog-admin .admin-table tr:hover td{background:#10243a!important}
+.catalog-admin .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#10243a!important;color:#edf7ff!important;border:1px solid #29435d!important;border-radius:11px!important;padding:10px 13px;font-weight:650}
+.catalog-admin .btn.primary,.catalog-admin .btn.dark{background:#42e7c0!important;color:#052820!important;border-color:#42e7c0!important}
+.catalog-admin .icon-danger{background:#3b1c2a!important;color:#ff9eaf!important;border:1px solid #653044!important;border-radius:10px;padding:9px}
+.catalog-admin .status{display:inline-block;background:#1a2c40!important;color:#bfd0e2!important;border:1px solid #29435d!important;border-radius:99px;padding:4px 9px;font-size:12px}
+.catalog-admin .status.good{background:#103b35!important;color:#42e7c0!important;border-color:#1b6658!important}
+.catalog-admin .admin-empty,.catalog-admin .notice{background:#10243a!important;color:#dceafa!important;border:1px solid #29435d!important;border-radius:13px;padding:14px}
+.modal-backdrop{background:#020812dd!important;backdrop-filter:blur(8px)}
+.product-form{background:#0c1b2d!important;color:#edf7ff!important;border:1px solid #29435d!important;border-radius:20px!important;box-shadow:0 24px 70px #0009!important}
+.product-form .form-head,.product-form .form-actions{background:#0c1b2d!important;border-color:#29435d!important}
+.product-form h2,.product-form label,.product-form .eyebrow{color:#edf7ff!important}
+.product-form input,.product-form select,.product-form textarea{background:#071625!important;color:#edf7ff!important;border:1px solid #29435d!important;border-radius:10px!important}
+.product-form .btn.primary{background:#42e7c0!important;color:#052820!important}
+@media(max-width:760px){.catalog-admin{padding:12px!important;border-radius:16px!important}.catalog-admin .admin-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.catalog-admin .admin-kpis>div{padding:12px!important}.catalog-admin .admin-table table{min-width:520px}.catalog-admin .row-actions{display:flex;flex-wrap:wrap;gap:6px}.product-form{width:100%!important;max-width:100%!important;max-height:90dvh!important;overflow:auto!important}}
