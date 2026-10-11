@@ -223,3 +223,36 @@
  .product-form{padding:16px!important}
  .form-actions .btn{min-height:44px}
 }
+
+
+/* Affinova admin dark workspace — force all admin surfaces into the navy/mint system */
+.admin-page,.admin-shell,.admin-main{background:#07111f!important;color:#f2f8ff!important}
+.admin-shell aside{background:#091625!important;border-color:#1b3550!important}
+.admin-shell .brand,.admin-shell h1,.admin-shell h2,.admin-shell h3,.admin-main h1,.admin-main h2,.admin-main h3{color:#f2f8ff!important}
+.admin-main .stats>div,.admin-main .catalog-admin,.admin-main .admin-table,.admin-main .admin-table table,.admin-main .admin-empty,.admin-main .empty,.admin-main .notice{background:#0c1b2d!important;color:#f2f8ff!important;border-color:#1b3550!important}
+.admin-main .stats>div,.admin-main .catalog-admin{border-radius:18px!important;box-shadow:0 8px 26px #0002!important}
+.admin-main .stats span,.admin-main .muted,.admin-main .admin-table td small{color:#9bb1ca!important}
+.admin-main .admin-table th,.admin-main .admin-table td{color:#e5effa!important;border-color:#1b3550!important}
+.admin-main .admin-table tr:hover td{background:#102239!important}
+.admin-main input:not([type=checkbox]),.admin-main select,.admin-main textarea,.admin-page input:not([type=checkbox]){background:#0a192a!important;color:#f2f8ff!important;border-color:#29435d!important;border-radius:10px!important}
+.admin-main .btn,.admin-main button,.admin-shell .side{transition:background .15s,border-color .15s,color .15s}
+.admin-shell .side.active,.admin-shell .side:hover{background:#103344!important;color:#42e7c0!important}
+.admin-main .btn.primary,.admin-main button.primary{background:#42e7c0!important;color:#062720!important;border-color:#42e7c0!important}
+.admin-main .btn:not(.primary){background:#102239!important;color:#e5effa!important;border-color:#29435d!important}
+.admin-main .admin-tabs{border-color:#1b3550!important}
+.admin-main .admin-tabs button{color:#a8bdd4!important}
+.admin-main .admin-tabs button.active{color:#42e7c0!important;border-bottom-color:#42e7c0!important}
+.admin-main .product-form,.admin-page .login{background:#0c1b2d!important;color:#f2f8ff!important;border-color:#29435d!important}
+.admin-main .product-form label,.admin-page .login label{color:#d6e5f4!important}
+.admin-main .product-form input,.admin-main .product-form textarea,.admin-main .product-form select,.admin-page .login input{background:#071625!important;color:#f2f8ff!important;border-color:#29435d!important}
+.admin-main .product-form .form-actions{background:#0c1b2d!important}
+@media(max-width:760px){
+ .admin-main{padding:20px 14px 36px!important}
+ .admin-main .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ .admin-main .catalog-admin{padding:14px!important}
+ .admin-main .catalog-head{align-items:flex-start!important;gap:12px!important}
+ .admin-main .admin-table{max-width:100%!important}
+ .admin-main .admin-table table{min-width:520px!important}
+ .admin-main .row-actions{flex-wrap:wrap!important}
+ .admin-main .product-form{max-width:100%!important;max-height:88dvh!important;overflow:auto!important}
+}
