@@ -256,3 +256,48 @@
  .admin-main .row-actions{flex-wrap:wrap!important}
  .admin-main .product-form{max-width:100%!important;max-height:88dvh!important;overflow:auto!important}
 }
+
+
+/* Correctly target the actual AdminPanel component classes */
+.catalog-admin{background:#0c1b2d!important;color:#f2f8ff!important;border:1px solid #1b3550!important;border-radius:20px!important;padding:18px!important;box-shadow:0 12px 32px #0003!important}
+.catalog-admin *{border-color:#1b3550}
+.catalog-admin h1,.catalog-admin h2,.catalog-admin h3,.catalog-admin strong,.catalog-admin label{color:#f2f8ff}
+.catalog-admin .eyebrow,.catalog-admin small,.catalog-admin p{color:#9bb1ca}
+.admin-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.admin-kpis>div{background:#102239!important;color:#f2f8ff!important;border:1px solid #29435d!important;border-radius:16px!important;padding:16px!important}
+.admin-kpis span,.admin-kpis small{color:#9bb1ca!important}
+.admin-tabs{display:flex;gap:6px;overflow-x:auto;padding:5px;background:#071625;border:1px solid #1b3550;border-radius:14px}
+.admin-tabs button{flex:0 0 auto;background:transparent!important;color:#a8bdd4!important;border:0!important;border-radius:10px;padding:11px 14px}
+.admin-tabs button.active{background:#103344!important;color:#42e7c0!important}
+.catalog-admin .search{background:#071625!important;color:#e5effa!important;border:1px solid #29435d!important;border-radius:10px;padding:8px 10px}
+.catalog-admin .search input{background:transparent!important;color:#f2f8ff!important;border:0!important;min-width:0}
+.catalog-admin select,.catalog-admin input:not([type=checkbox]),.catalog-admin textarea{background:#071625!important;color:#f2f8ff!important;border:1px solid #29435d!important;border-radius:10px!important;padding:10px}
+.catalog-admin input[type=checkbox]{accent-color:#42e7c0}
+.catalog-admin .admin-table{overflow-x:auto;border:1px solid #1b3550!important;border-radius:14px;background:#0a192a!important}
+.catalog-admin .admin-table table{width:100%;border-collapse:collapse}
+.catalog-admin .admin-table th{background:#102239!important;color:#9bb1ca!important;text-align:left;font-size:12px}
+.catalog-admin .admin-table th,.catalog-admin .admin-table td{padding:12px;border-bottom:1px solid #1b3550!important;color:#e5effa}
+.catalog-admin .admin-table td strong{display:block}
+.catalog-admin .admin-table td small{display:block;margin-top:4px}
+.catalog-admin .admin-table tr:hover td{background:#102239!important}
+.catalog-admin .btn{background:#102239!important;color:#e5effa!important;border:1px solid #29435d!important;border-radius:10px!important;padding:9px 12px}
+.catalog-admin .btn.primary,.catalog-admin .btn.dark{background:#42e7c0!important;color:#062720!important;border-color:#42e7c0!important}
+.catalog-admin .icon-danger{background:#3b1c2a!important;color:#ff9eaf!important;border:1px solid #653044!important;border-radius:9px;padding:8px}
+.catalog-admin .status{display:inline-block;background:#1a2c40!important;color:#b5c9df!important;border:1px solid #29435d!important;border-radius:99px;padding:4px 8px;font-size:12px}
+.catalog-admin .status.good{background:#103b35!important;color:#42e7c0!important;border-color:#1b6658!important}
+.admin-empty,.notice{background:#102239!important;color:#dceafa!important;border:1px solid #29435d!important;border-radius:12px;padding:14px}
+.modal-backdrop{position:fixed;inset:0;z-index:1000;background:#020812cc!important;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:14px}
+.product-form{background:#0c1b2d!important;color:#f2f8ff!important;border:1px solid #29435d!important;border-radius:20px!important;box-shadow:0 24px 70px #0008!important}
+.product-form .form-head,.product-form .form-actions{background:#0c1b2d!important;border-color:#29435d!important}
+.product-form h2,.product-form label{color:#f2f8ff!important}
+.product-form input,.product-form select,.product-form textarea{background:#071625!important;color:#f2f8ff!important;border:1px solid #29435d!important;border-radius:10px!important}
+.product-form .btn.primary{background:#42e7c0!important;color:#062720!important}
+@media(max-width:760px){
+ .catalog-admin{padding:12px!important;border-radius:16px!important}
+ .admin-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+ .admin-kpis>div{padding:12px!important;min-width:0}
+ .catalog-admin .catalog-head{display:flex;flex-wrap:wrap;gap:12px}
+ .catalog-admin .admin-table table{min-width:500px}
+ .catalog-admin .row-actions{display:flex;gap:6px;flex-wrap:wrap}
+ .product-form{width:100%!important;max-width:100%!important;max-height:90dvh!important;overflow:auto!important}
+}
