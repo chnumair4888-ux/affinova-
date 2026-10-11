@@ -2,13 +2,9 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.affinova.admin',
-  appName: 'Affinova Admin',
+  appName: 'Affinova',
   webDir: 'www',
-  server: {
-    url: 'https://affinova.cyou/admin',
-    cleartext: false,
-    androidScheme: 'https'
-  }
+  androidScheme: 'https'
 };
 
 export default config;
