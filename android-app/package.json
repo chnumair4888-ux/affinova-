@@ -1,0 +1,17 @@
+{
+  "name": "affinova-admin-android",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Free Android wrapper for the Affinova Admin web app",
+  "scripts": {
+    "android:add": "cap add android",
+    "android:sync": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}
