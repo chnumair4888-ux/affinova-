@@ -217,7 +217,7 @@ function Admin(){
 export default function App(){
  const [,setRoute]=useState(()=>location.pathname+location.search+location.hash);
  useEffect(()=>{
-  const sync=()=>{setRoute(location.pathname+location.search+location.hash);const y=Number(history.state?.affinovaScrollY);if(Number.isFinite(y))requestAnimationFrame(()=>requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"})));};
+  const sync=()=>{const y=Number(history.state?.affinovaScrollY);setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo({top:y,behavior:"auto"});requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"}));}};
   const click=(e:MouseEvent)=>{
    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
    const target=e.target as Element|null;const a=target?.closest("a") as HTMLAnchorElement|null;if(!a||a.target||a.hasAttribute("download"))return;
@@ -225,7 +225,7 @@ export default function App(){
    if(url.pathname===location.pathname&&url.search===location.search&&url.hash){return;}
    e.preventDefault();history.replaceState({...history.state,affinovaScrollY:scrollY},"",location.href);history.pushState({},"",url.pathname+url.search+url.hash);sync();window.scrollTo({top:0,behavior:"auto"});
   };
-  addEventListener("popstate",sync);document.addEventListener("click",click);
+  history.scrollRestoration="manual";addEventListener("popstate",sync);document.addEventListener("click",click);
   return()=>{removeEventListener("popstate",sync);document.removeEventListener("click",click)};
  },[]);
  const publicSlug=location.pathname.startsWith("/about")?"about":location.pathname.startsWith("/contact")?"contact":location.pathname.startsWith("/privacy")?"privacy":location.pathname.startsWith("/terms")?"terms":location.pathname.startsWith("/affiliate-disclosure")?"affiliate-disclosure":null;
