@@ -10,21 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add social helper to video products
+      - name: Keep internal product navigation inside SPA
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('src/AdminPanel.tsx')
+          p=Path('src/App.tsx')
           s=p.read_text()
-          anchor=' const duplicateProduct=async(p:Product)=>'
-          helper=''' const prepareSocial=async(p:Product)=>{const link=`https://affinova.cyou/product/${p.slug}`;const text=`${p.title}\\n\\nPrice: ${p.currency||"USD"} ${Number(p.price||0).toFixed(2)}\\n\\nView product: ${link}\\n\\n#Affinova #ProductFinds #Deals`;try{await navigator.clipboard.writeText(text);setMsg("Social post copied. Video and platform opened in new tabs.")}catch{setMsg("Clipboard blocked. Please allow clipboard access.")}const video=String((p as any).video_url||"").trim();if(video)window.open(video,"_blank","noopener,noreferrer");};\n'''
-          if 'const prepareSocial=async(p:Product)' not in s:
-              if anchor not in s: raise SystemExit('anchor missing')
-              s=s.replace(anchor,helper+anchor,1)
-          old='<button onClick={()=>setEditingProduct(p)} className="btn small">Edit</button><button onClick={()=>duplicateProduct(p)} className="btn small"><Copy size={14}/></button>'
-          new='<button onClick={()=>setEditingProduct(p)} className="btn small">Edit</button>{String((p as any).video_url||"").trim()&&<button onClick={()=>prepareSocial(p)} className="btn small" title="Copy social caption and open product video">Social Post</button>}<button onClick={()=>duplicateProduct(p)} className="btn small"><Copy size={14}/></button>'
-          if 'title="Copy social caption and open product video"' not in s:
-              if old not in s: raise SystemExit('actions target missing')
+          old='''export default function App(){\n const publicSlug=location.pathname.startsWith("/about")?"about":location.pathname.startsWith("/contact")?"contact":location.pathname.startsWith("/privacy")?"privacy":location.pathname.startsWith("/terms")?"terms":location.pathname.startsWith("/affiliate-disclosure")?"affiliate-disclosure":null;'''
+          new='''export default function App(){\n const [,setRoute]=useState(()=>location.pathname+location.search+location.hash);\n useEffect(()=>{\n  const sync=()=>setRoute(location.pathname+location.search+location.hash);\n  const click=(e:MouseEvent)=>{\n   if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;\n   const target=e.target as Element|null;const a=target?.closest("a") as HTMLAnchorElement|null;if(!a||a.target||a.hasAttribute("download"))return;\n   const url=new URL(a.href,location.href);if(url.origin!==location.origin)return;\n   if(url.pathname===location.pathname&&url.search===location.search&&url.hash){return;}\n   e.preventDefault();history.pushState({},"",url.pathname+url.search+url.hash);sync();window.scrollTo({top:0,behavior:"auto"});\n  };\n  addEventListener("popstate",sync);document.addEventListener("click",click);\n  return()=>{removeEventListener("popstate",sync);document.removeEventListener("click",click)};\n },[]);\n const publicSlug=location.pathname.startsWith("/about")?"about":location.pathname.startsWith("/contact")?"contact":location.pathname.startsWith("/privacy")?"privacy":location.pathname.startsWith("/terms")?"terms":location.pathname.startsWith("/affiliate-disclosure")?"affiliate-disclosure":null;'''
+          if 'const [,setRoute]=useState(()=>location.pathname+location.search+location.hash);' not in s:
+              if old not in s: raise SystemExit('App router anchor missing')
               s=s.replace(old,new,1)
           p.write_text(s)
           PY
@@ -32,6 +27,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/AdminPanel.tsx
-          git commit -m "Add social post helper for video products"
+          git add src/App.tsx
+          git commit -m "Prevent full reload on product back navigation"
           git push
