@@ -10,26 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Preserve home data and scroll position on back
+      - name: Restore scroll before browser paints home
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('src/App.tsx')
           s=p.read_text()
-          marker='function Home(){const [siteSettings,setSiteSettings]=useState<Record<string,any>>({});const [homepageSections,setHomepageSections]=useState<any[]>([]);const [products,setProducts]=useState<Product[]>([]),[categories,setCategories]=useState<Category[]>([]),[guides,setGuides]=useState<Guide[]>([]),[query,setQuery]=useState(""),[loading,setLoading]=useState(true),[loadError,setLoadError]=useState("");'
-          replacement='''let homeCache:{products:Product[];categories:Category[];guides:Guide[]}|null=null;\nfunction Home(){const [siteSettings,setSiteSettings]=useState<Record<string,any>>({});const [homepageSections,setHomepageSections]=useState<any[]>([]);const [products,setProducts]=useState<Product[]>(()=>homeCache?.products||[]),[categories,setCategories]=useState<Category[]>(()=>homeCache?.categories||[]),[guides,setGuides]=useState<Guide[]>(()=>homeCache?.guides||[]),[query,setQuery]=useState(""),[loading,setLoading]=useState(!homeCache),[loadError,setLoadError]=useState("");'''
-          if 'let homeCache:{products:Product[];categories:Category[];guides:Guide[]}|null=null;' not in s:
-              if marker not in s: raise SystemExit('Home state anchor missing')
-              s=s.replace(marker,replacement,1)
-          old='setProducts((p.data||[])as Product[]);setCategories((c.data||[])as Category[]);setGuides((g.data||[])as Guide[]);setLoading(false)'
-          new='''const nextProducts=(p.data||[])as Product[],nextCategories=(c.data||[])as Category[],nextGuides=(g.data||[])as Guide[];setProducts(nextProducts);setCategories(nextCategories);setGuides(nextGuides);homeCache={products:nextProducts,categories:nextCategories,guides:nextGuides};setLoading(false)'''
-          if old in s:s=s.replace(old,new,1)
-          oldsync='const sync=()=>setRoute(location.pathname+location.search+location.hash);'
-          newsync='''const sync=()=>{setRoute(location.pathname+location.search+location.hash);const y=Number(history.state?.affinovaScrollY);if(Number.isFinite(y))requestAnimationFrame(()=>requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"})));};'''
-          if oldsync in s:s=s.replace(oldsync,newsync,1)
-          oldpush='e.preventDefault();history.pushState({},"",url.pathname+url.search+url.hash);sync();window.scrollTo({top:0,behavior:"auto"});'
-          newpush='''e.preventDefault();history.replaceState({...history.state,affinovaScrollY:scrollY},"",location.href);history.pushState({},"",url.pathname+url.search+url.hash);sync();window.scrollTo({top:0,behavior:"auto"});'''
-          if oldpush in s:s=s.replace(oldpush,newpush,1)
+          old='const sync=()=>{setRoute(location.pathname+location.search+location.hash);const y=Number(history.state?.affinovaScrollY);if(Number.isFinite(y))requestAnimationFrame(()=>requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"})));};'
+          new='const sync=()=>{const y=Number(history.state?.affinovaScrollY);setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo({top:y,behavior:"auto"});requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"}));}};'
+          if old not in s: raise SystemExit('scroll restore anchor missing')
+          s=s.replace(old,new,1)
+          old2='addEventListener("popstate",sync);document.addEventListener("click",click);'
+          new2='history.scrollRestoration="manual";addEventListener("popstate",sync);document.addEventListener("click",click);'
+          if old2 not in s: raise SystemExit('listener anchor missing')
+          s=s.replace(old2,new2,1)
           p.write_text(s)
           PY
       - name: Commit update
@@ -37,5 +31,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/App.tsx
-          git commit -m "Preserve storefront state when returning from products"
+          git commit -m "Restore storefront scroll instantly on back"
           git push
