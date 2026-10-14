@@ -10,17 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Keep internal product navigation inside SPA
+      - name: Preserve home data and scroll position on back
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('src/App.tsx')
           s=p.read_text()
-          old='''export default function App(){\n const publicSlug=location.pathname.startsWith("/about")?"about":location.pathname.startsWith("/contact")?"contact":location.pathname.startsWith("/privacy")?"privacy":location.pathname.startsWith("/terms")?"terms":location.pathname.startsWith("/affiliate-disclosure")?"affiliate-disclosure":null;'''
-          new='''export default function App(){\n const [,setRoute]=useState(()=>location.pathname+location.search+location.hash);\n useEffect(()=>{\n  const sync=()=>setRoute(location.pathname+location.search+location.hash);\n  const click=(e:MouseEvent)=>{\n   if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;\n   const target=e.target as Element|null;const a=target?.closest("a") as HTMLAnchorElement|null;if(!a||a.target||a.hasAttribute("download"))return;\n   const url=new URL(a.href,location.href);if(url.origin!==location.origin)return;\n   if(url.pathname===location.pathname&&url.search===location.search&&url.hash){return;}\n   e.preventDefault();history.pushState({},"",url.pathname+url.search+url.hash);sync();window.scrollTo({top:0,behavior:"auto"});\n  };\n  addEventListener("popstate",sync);document.addEventListener("click",click);\n  return()=>{removeEventListener("popstate",sync);document.removeEventListener("click",click)};\n },[]);\n const publicSlug=location.pathname.startsWith("/about")?"about":location.pathname.startsWith("/contact")?"contact":location.pathname.startsWith("/privacy")?"privacy":location.pathname.startsWith("/terms")?"terms":location.pathname.startsWith("/affiliate-disclosure")?"affiliate-disclosure":null;'''
-          if 'const [,setRoute]=useState(()=>location.pathname+location.search+location.hash);' not in s:
-              if old not in s: raise SystemExit('App router anchor missing')
-              s=s.replace(old,new,1)
+          marker='function Home(){const [siteSettings,setSiteSettings]=useState<Record<string,any>>({});const [homepageSections,setHomepageSections]=useState<any[]>([]);const [products,setProducts]=useState<Product[]>([]),[categories,setCategories]=useState<Category[]>([]),[guides,setGuides]=useState<Guide[]>([]),[query,setQuery]=useState(""),[loading,setLoading]=useState(true),[loadError,setLoadError]=useState("");'
+          replacement='''let homeCache:{products:Product[];categories:Category[];guides:Guide[]}|null=null;\nfunction Home(){const [siteSettings,setSiteSettings]=useState<Record<string,any>>({});const [homepageSections,setHomepageSections]=useState<any[]>([]);const [products,setProducts]=useState<Product[]>(()=>homeCache?.products||[]),[categories,setCategories]=useState<Category[]>(()=>homeCache?.categories||[]),[guides,setGuides]=useState<Guide[]>(()=>homeCache?.guides||[]),[query,setQuery]=useState(""),[loading,setLoading]=useState(!homeCache),[loadError,setLoadError]=useState("");'''
+          if 'let homeCache:{products:Product[];categories:Category[];guides:Guide[]}|null=null;' not in s:
+              if marker not in s: raise SystemExit('Home state anchor missing')
+              s=s.replace(marker,replacement,1)
+          old='setProducts((p.data||[])as Product[]);setCategories((c.data||[])as Category[]);setGuides((g.data||[])as Guide[]);setLoading(false)'
+          new='''const nextProducts=(p.data||[])as Product[],nextCategories=(c.data||[])as Category[],nextGuides=(g.data||[])as Guide[];setProducts(nextProducts);setCategories(nextCategories);setGuides(nextGuides);homeCache={products:nextProducts,categories:nextCategories,guides:nextGuides};setLoading(false)'''
+          if old in s:s=s.replace(old,new,1)
+          oldsync='const sync=()=>setRoute(location.pathname+location.search+location.hash);'
+          newsync='''const sync=()=>{setRoute(location.pathname+location.search+location.hash);const y=Number(history.state?.affinovaScrollY);if(Number.isFinite(y))requestAnimationFrame(()=>requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"})));};'''
+          if oldsync in s:s=s.replace(oldsync,newsync,1)
+          oldpush='e.preventDefault();history.pushState({},"",url.pathname+url.search+url.hash);sync();window.scrollTo({top:0,behavior:"auto"});'
+          newpush='''e.preventDefault();history.replaceState({...history.state,affinovaScrollY:scrollY},"",location.href);history.pushState({},"",url.pathname+url.search+url.hash);sync();window.scrollTo({top:0,behavior:"auto"});'''
+          if oldpush in s:s=s.replace(oldpush,newpush,1)
           p.write_text(s)
           PY
       - name: Commit update
@@ -28,5 +37,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/App.tsx
-          git commit -m "Prevent full reload on product back navigation"
+          git commit -m "Preserve storefront state when returning from products"
           git push
