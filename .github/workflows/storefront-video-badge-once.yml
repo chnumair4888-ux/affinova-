@@ -10,22 +10,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Show more products in deals carousel
+      - name: Add social helper to video products
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('src/App.tsx')
+          p=Path('src/AdminPanel.tsx')
           s=p.read_text()
-          old='deals.slice(0,4).map(p=>'
-          new='deals.slice(0,12).map(p=>'
-          if old not in s:
-              raise SystemExit('Deals target not found')
-          p.write_text(s.replace(old,new,1))
+          anchor=' const duplicateProduct=async(p:Product)=>'
+          helper=''' const prepareSocial=async(p:Product)=>{const link=`https://affinova.cyou/product/${p.slug}`;const text=`${p.title}\\n\\nPrice: ${p.currency||"USD"} ${Number(p.price||0).toFixed(2)}\\n\\nView product: ${link}\\n\\n#Affinova #ProductFinds #Deals`;try{await navigator.clipboard.writeText(text);setMsg("Social post copied. Video and platform opened in new tabs.")}catch{setMsg("Clipboard blocked. Please allow clipboard access.")}const video=String((p as any).video_url||"").trim();if(video)window.open(video,"_blank","noopener,noreferrer");};\n'''
+          if 'const prepareSocial=async(p:Product)' not in s:
+              if anchor not in s: raise SystemExit('anchor missing')
+              s=s.replace(anchor,helper+anchor,1)
+          old='<button onClick={()=>setEditingProduct(p)} className="btn small">Edit</button><button onClick={()=>duplicateProduct(p)} className="btn small"><Copy size={14}/></button>'
+          new='<button onClick={()=>setEditingProduct(p)} className="btn small">Edit</button>{String((p as any).video_url||"").trim()&&<button onClick={()=>prepareSocial(p)} className="btn small" title="Copy social caption and open product video">Social Post</button>}<button onClick={()=>duplicateProduct(p)} className="btn small"><Copy size={14}/></button>'
+          if 'title="Copy social caption and open product video"' not in s:
+              if old not in s: raise SystemExit('actions target missing')
+              s=s.replace(old,new,1)
+          p.write_text(s)
           PY
       - name: Commit update
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/App.tsx
-          git commit -m "Make deals carousel scroll through more products"
+          git add src/AdminPanel.tsx
+          git commit -m "Add social post helper for video products"
           git push
