@@ -1,4 +1,4 @@
-name: Storefront video badge one-time update
+name: Storefront one-time update
 on:
   push:
     paths:
@@ -10,23 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add video badge to product cards
+      - name: Show more products in deals carousel
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('src/App.tsx')
           s=p.read_text()
-          old='{p.is_deal&&<span className="badge"><Tag size={12}/> Deal</span>}</a>'
-          new='{p.is_deal&&<span className="badge"><Tag size={12}/> Deal</span>}{String((p as any).video_url||"").trim()&&<span className="badge" style={{left:p.is_deal?"82px":"12px"}}>🎥 Video</span>}</a>'
+          old='deals.slice(0,4).map(p=>'
+          new='deals.slice(0,12).map(p=>'
           if old not in s:
-              raise SystemExit('Product card badge target not found')
-          s=s.replace(old,new,1)
-          p.write_text(s)
+              raise SystemExit('Deals target not found')
+          p.write_text(s.replace(old,new,1))
           PY
       - name: Commit update
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/App.tsx
-          git commit -m "Show video badge on storefront product cards"
+          git commit -m "Make deals carousel scroll through more products"
           git push
