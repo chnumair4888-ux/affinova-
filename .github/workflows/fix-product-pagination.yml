@@ -1,0 +1,49 @@
+name: Fix product listing pagination
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-product-pagination.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-pagination:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add Load More pagination
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('src/App.tsx')
+          s = p.read_text()
+
+          old_state = 'const [products,setProducts]=useState<Product[]>([]),[categories,setCategories]=useState<Category[]>([]),[guides,setGuides]=useState<Guide[]>([]),[query,setQuery]=useState(""),[loading,setLoading]=useState(true),[loadError,setLoadError]=useState("");const[savedIds,setSavedIds]=useState<string[]>([]),[compareIds,setCompareIds]=useState<string[]>([]);'
+          new_state = 'const [products,setProducts]=useState<Product[]>([]),[categories,setCategories]=useState<Category[]>([]),[guides,setGuides]=useState<Guide[]>([]),[query,setQuery]=useState(""),[loading,setLoading]=useState(true),[loadError,setLoadError]=useState("");const[visibleCount,setVisibleCount]=useState(12);const[savedIds,setSavedIds]=useState<string[]>([]),[compareIds,setCompareIds]=useState<string[]>([]);'
+          if old_state not in s:
+              raise SystemExit('Home state pattern not found')
+          s = s.replace(old_state, new_state, 1)
+
+          old_filtered = '},[products,categories,query]);const deals=useMemo(()'
+          new_filtered = '},[products,categories,query]);useEffect(()=>{setVisibleCount(12)},[query]);const deals=useMemo(()'
+          if old_filtered not in s:
+              raise SystemExit('Filtered products pattern not found')
+          s = s.replace(old_filtered, new_filtered, 1)
+
+          old_grid = 'filtered.length?<div className="grid">{filtered.slice(0,8).map(p=><Card p={p} key={p.id} saved={savedIds.includes(p.id)} onSave={()=>toggleSave(p.id)} compared={compareIds.includes(p.id)} onCompare={()=>toggleCompare(p.id)}/>)}</div>:<div className="empty">No matching products yet.</div>'
+          new_grid = 'filtered.length?<><div className="grid">{filtered.slice(0,visibleCount).map(p=><Card p={p} key={p.id} saved={savedIds.includes(p.id)} onSave={()=>toggleSave(p.id)} compared={compareIds.includes(p.id)} onCompare={()=>toggleCompare(p.id)}/>)}</div>{visibleCount<filtered.length&&<div style={{display:"flex",justifyContent:"center",marginTop:28}}><button className="btn dark" type="button" onClick={()=>setVisibleCount(v=>v+12)}>Load more ({Math.min(12,filtered.length-visibleCount)} more)</button></div>}</>:<div className="empty">No matching products yet.</div>'
+          if old_grid not in s:
+              raise SystemExit('Product grid pattern not found')
+          s = s.replace(old_grid, new_grid, 1)
+
+          p.write_text(s)
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/App.tsx
+          git commit -m "Add Load More pagination to product listings"
+          git push
