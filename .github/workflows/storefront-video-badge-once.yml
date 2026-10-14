@@ -10,20 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Restore scroll before browser paints home
+      - name: Make back navigation restore before paint
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('src/App.tsx')
           s=p.read_text()
-          old='const sync=()=>{setRoute(location.pathname+location.search+location.hash);const y=Number(history.state?.affinovaScrollY);if(Number.isFinite(y))requestAnimationFrame(()=>requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"})));};'
-          new='const sync=()=>{const y=Number(history.state?.affinovaScrollY);setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo({top:y,behavior:"auto"});requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"}));}};'
-          if old not in s: raise SystemExit('scroll restore anchor missing')
+          old='const sync=()=>{const y=Number(history.state?.affinovaScrollY);setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo({top:y,behavior:"auto"});requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"}));}};'
+          new='const sync=()=>{const y=Number(history.state?.affinovaScrollY);if(Number.isFinite(y))document.documentElement.style.scrollBehavior="auto";setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo(0,y);requestAnimationFrame(()=>{scrollTo(0,y);document.documentElement.style.scrollBehavior="";});}};'
+          if old not in s: raise SystemExit('navigation anchor missing')
           s=s.replace(old,new,1)
-          old2='addEventListener("popstate",sync);document.addEventListener("click",click);'
-          new2='history.scrollRestoration="manual";addEventListener("popstate",sync);document.addEventListener("click",click);'
-          if old2 not in s: raise SystemExit('listener anchor missing')
-          s=s.replace(old2,new2,1)
           p.write_text(s)
           PY
       - name: Commit update
@@ -31,5 +27,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/App.tsx
-          git commit -m "Restore storefront scroll instantly on back"
+          git commit -m "Remove visible scroll animation on back navigation"
           git push
