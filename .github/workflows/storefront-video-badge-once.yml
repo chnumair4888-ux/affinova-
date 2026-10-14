@@ -28,7 +28,7 @@ jobs:
               p.write_text(s)
           PY
       - name: Build
-        run: npm ci && npm run build
+        run: npm install --no-audit --no-fund && npm run build
       - name: Commit update
         run: |
           git config user.name "github-actions[bot]"
