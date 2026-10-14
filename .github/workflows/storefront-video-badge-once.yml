@@ -10,22 +10,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Make back navigation restore before paint
+      - name: Isolate public storefront from stale admin sessions
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('src/App.tsx')
-          s=p.read_text()
-          old='const sync=()=>{const y=Number(history.state?.affinovaScrollY);setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo({top:y,behavior:"auto"});requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"}));}};'
-          new='const sync=()=>{const y=Number(history.state?.affinovaScrollY);if(Number.isFinite(y))document.documentElement.style.scrollBehavior="auto";setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo(0,y);requestAnimationFrame(()=>{scrollTo(0,y);document.documentElement.style.scrollBehavior="";});}};'
-          if old not in s: raise SystemExit('navigation anchor missing')
-          s=s.replace(old,new,1)
-          p.write_text(s)
+          for name in ['src/App.tsx','src/DetailPages.tsx']:
+              p=Path(name)
+              s=p.read_text()
+              old='import {supabase} from "./lib/supabase";'
+              new='import {supabase,publicSupabase} from "./lib/supabase";'
+              if old in s:
+                  s=s.replace(old,new,1)
+              elif new not in s:
+                  raise SystemExit(f'import anchor missing in {name}')
+              for table in ['products','categories','guides','site_settings','homepage_sections','pages']:
+                  s=s.replace(f'supabase.from("{table}")',f'publicSupabase.from("{table}")')
+              p.write_text(s)
           PY
+      - name: Build
+        run: npm ci && npm run build
       - name: Commit update
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/App.tsx
-          git commit -m "Remove visible scroll animation on back navigation"
+          git add src/App.tsx src/DetailPages.tsx
+          git commit -m "Keep public storefront independent of admin auth session"
           git push
