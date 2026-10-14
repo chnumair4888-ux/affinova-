@@ -214,6 +214,19 @@ function Admin(){
  return <div className="admin-shell"><AdminNav tab={tab} view={view} open={menuOpen} setOpen={setMenuOpen}/><div className={menuOpen?"admin-menu-backdrop show":"admin-menu-backdrop"} onClick={()=>setMenuOpen(false)}/><section className="admin-main"><div className="admin-top"><div><span className="eyebrow">Control center</span><h1>{title}</h1><p className="admin-subtitle">Manage Affinova content, discovery and performance.</p></div><div className="admin-top-actions"><button className="admin-mobile-menu-trigger" onClick={()=>setMenuOpen(true)}><Menu size={18}/> Menu</button><button className="btn dark" onClick={()=>location.href="/"}>View site <ExternalLink size={14}/></button></div></div><div className="stats"><div><span>Signed in as</span><strong>{session.user.email}</strong></div><div><span>Role</span><strong>{role}</strong></div><div><span>Backend</span><strong>Supabase</strong></div></div><Suspense fallback={<div className="notice">Loading admin module…</div>}>{content}</Suspense></section></div>
 }
 export default function App(){
+ const [,setRoute]=useState(()=>location.pathname+location.search+location.hash);
+ useEffect(()=>{
+  const sync=()=>setRoute(location.pathname+location.search+location.hash);
+  const click=(e:MouseEvent)=>{
+   if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+   const target=e.target as Element|null;const a=target?.closest("a") as HTMLAnchorElement|null;if(!a||a.target||a.hasAttribute("download"))return;
+   const url=new URL(a.href,location.href);if(url.origin!==location.origin)return;
+   if(url.pathname===location.pathname&&url.search===location.search&&url.hash){return;}
+   e.preventDefault();history.pushState({},"",url.pathname+url.search+url.hash);sync();window.scrollTo({top:0,behavior:"auto"});
+  };
+  addEventListener("popstate",sync);document.addEventListener("click",click);
+  return()=>{removeEventListener("popstate",sync);document.removeEventListener("click",click)};
+ },[]);
  const publicSlug=location.pathname.startsWith("/about")?"about":location.pathname.startsWith("/contact")?"contact":location.pathname.startsWith("/privacy")?"privacy":location.pathname.startsWith("/terms")?"terms":location.pathname.startsWith("/affiliate-disclosure")?"affiliate-disclosure":null;
  useEffect(()=>{
   if(location.pathname.startsWith("/admin")) return;
