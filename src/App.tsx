@@ -217,7 +217,7 @@ function Admin(){
 export default function App(){
  const [,setRoute]=useState(()=>location.pathname+location.search+location.hash);
  useEffect(()=>{
-  const sync=()=>{const y=Number(history.state?.affinovaScrollY);setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo({top:y,behavior:"auto"});requestAnimationFrame(()=>scrollTo({top:y,behavior:"auto"}));}};
+  const sync=()=>{const y=Number(history.state?.affinovaScrollY);if(Number.isFinite(y))document.documentElement.style.scrollBehavior="auto";setRoute(location.pathname+location.search+location.hash);if(Number.isFinite(y)){scrollTo(0,y);requestAnimationFrame(()=>{scrollTo(0,y);document.documentElement.style.scrollBehavior="";});}};
   const click=(e:MouseEvent)=>{
    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
    const target=e.target as Element|null;const a=target?.closest("a") as HTMLAnchorElement|null;if(!a||a.target||a.hasAttribute("download"))return;
