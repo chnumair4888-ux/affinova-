@@ -1,0 +1,52 @@
+name: Deals carousel one-time update
+on:
+  push:
+    paths:
+      - '.github/workflows/deals-carousel-once.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add horizontal scrolling to deals section
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/App.tsx')
+          s=p.read_text()
+          s=s.replace('import {lazy,Suspense,useEffect,useMemo,useState} from "react";','import {lazy,Suspense,useEffect,useMemo,useRef,useState} from "react";',1)
+          marker='function Home(){'
+          if marker not in s: raise SystemExit('Home marker not found')
+          s=s.replace(marker,'function DealsCarousel({children}:{children:React.ReactNode}){const ref=useRef<HTMLDivElement>(null);const move=(dir:number)=>ref.current?.scrollBy({left:dir*Math.max(280,ref.current.clientWidth*.8),behavior:"smooth"});return <div className="deals-carousel-wrap" style={{position:"relative"}}><button type="button" aria-label="Previous deals" onClick={()=>move(-1)} style={{position:"absolute",left:-18,top:"45%",zIndex:5,width:42,height:42,borderRadius:"50%",border:"1px solid #444",background:"#111",color:"#fff",cursor:"pointer"}}>‹</button><div ref={ref} style={{display:"grid",gridAutoFlow:"column",gridAutoColumns:"minmax(260px,1fr)",gridTemplateRows:"1fr",gap:16,overflowX:"auto",scrollSnapType:"x mandatory",scrollBehavior:"smooth",paddingBottom:8}}>{children}</div><button type="button" aria-label="Next deals" onClick={()=>move(1)} style={{position:"absolute",right:-18,top:"45%",zIndex:5,width:42,height:42,borderRadius:"50%",border:"1px solid #444",background:"#111",color:"#fff",cursor:"pointer"}}>›</button></div>}\n\n'+marker,1)
+          # Wrap the deals product grid by locating the deals section and its first card grid.
+          deal_pos=s.find('id="deals"')
+          if deal_pos<0: deal_pos=s.find('Deals worth opening')
+          if deal_pos<0: raise SystemExit('Deals section not found')
+          # Common markup uses a product-grid div followed by mapped Card components.
+          start=s.find('<div className="grid">',deal_pos)
+          grid_class='grid'
+          if start<0:
+              start=s.find('<div className="product-grid">',deal_pos); grid_class='product-grid'
+          if start<0: raise SystemExit('Deals grid not found')
+          open_tag=f'<div className="{grid_class}">'
+          content_start=start+len(open_tag)
+          depth=1;i=content_start
+          while i<len(s) and depth:
+              no=s.find('<div',i); nc=s.find('</div>',i)
+              if nc<0: raise SystemExit('Unclosed deals grid')
+              if no!=-1 and no<nc: depth+=1;i=no+4
+              else: depth-=1;i=nc+6
+          end=i
+          inner=s[content_start:end-6]
+          s=s[:start]+'<DealsCarousel>'+inner+'</DealsCarousel>'+s[end:]
+          p.write_text(s)
+          PY
+      - name: Commit update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/App.tsx
+          git commit -m "Add horizontal carousel controls to deals"
+          git push
