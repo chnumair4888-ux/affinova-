@@ -1,0 +1,38 @@
+name: Optimize mobile LCP
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/optimize-mobile-lcp.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stabilize hero image and reduce image weight
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('src/App.tsx')
+          s=p.read_text()
+          old='image:product?productImage(product):editorialImages[i]'
+          new='image:editorialImages[i]'
+          if old not in s:
+              raise SystemExit('Hero image expression not found')
+          s=s.replace(old,new,1)
+          s=s.replace('auto=format&fit=crop&w=1400&q=85','auto=format&fit=crop&w=900&q=72&fm=webp')
+          oldimg='<img key={slide.image} src={slide.image} alt={slide.name} width="1400" height="900" decoding="async" fetchPriority="high"/>'
+          newimg='<img key={slide.image} src={slide.image} alt={slide.name} width="1400" height="900" loading="eager" decoding="async" fetchPriority="high"/>'
+          if oldimg not in s:
+              raise SystemExit('Hero img tag not found')
+          s=s.replace(oldimg,newimg,1)
+          p.write_text(s)
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/App.tsx
+          git commit -m "Stabilize hero image for faster mobile LCP" || exit 0
+          git push
