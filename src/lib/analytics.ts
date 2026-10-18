@@ -37,6 +37,19 @@ function deviceType(){
   return w<640?"mobile":w<1024?"tablet":"desktop";
 }
 
+function trackGa4Click(eventType:string,productId?:string|null,label?:string,destination?:string){
+  if(typeof window==="undefined") return;
+  const gtag=(window as any).gtag;
+  if(typeof gtag!=="function") return;
+  gtag("event",eventType==="affiliate"?"affiliate_click":"site_click",{
+    event_category:eventType==="affiliate"?"affiliate":"engagement",
+    event_label:label||undefined,
+    product_id:productId||undefined,
+    link_url:destination||undefined,
+    transport_type:"beacon"
+  });
+}
+
 export async function trackPageView(productId?:string|null){
   if(!canTrack()) return;
   const u=new URL(location.href);
@@ -56,6 +69,7 @@ export async function trackPageView(productId?:string|null){
 
 export async function trackClick(eventType:"affiliate"|"cta"|"wishlist"|"compare", productId?:string|null, label?:string, destination?:string){
   if(!canTrack()) return;
+  trackGa4Click(eventType,productId,label,destination);
   const payload={session_id:getAnalyticsSessionId(),event_type:eventType,path:location.pathname,product_id:productId||null,label:label||null,destination:destination||null,device_type:deviceType(),country:await getVisitorCountry()};
   try{
     const url=`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/click_events`;
