@@ -1,21 +1,26 @@
 # Affinova
 
-> Affinova is a product discovery and buying-guide website featuring curated products, comparisons, deals and affiliate links.
+> Affinova is a product discovery and buying-guide website featuring curated products, comparisons, deals, and affiliate links.
+
+Affinova helps visitors discover useful products, compare options, explore categories and deals, and read practical buying guides. Product prices, availability, and offers may change, and affiliate links may earn Affinova a commission at no extra cost to the buyer.
 
 ## Main sections
-- Homepage: https://affinova.cyou/
-- Products: https://affinova.cyou/#products
-- Categories: https://affinova.cyou/#categories
-- Deals: https://affinova.cyou/#deals
-- Guides: https://affinova.cyou/#guides
-- About: https://affinova.cyou/about
-- Affiliate disclosure: https://affinova.cyou/affiliate-disclosure
-- Privacy: https://affinova.cyou/privacy
-- Contact: https://affinova.cyou/contact
 
-## Discovery
-- Sitemap: https://affinova.cyou/sitemap.xml
-- AI catalog: https://affinova.cyou/ai-catalog.json
+- [Affinova homepage](https://affinova.cyou/): Browse featured products and editorial collections.
+- [Products](https://affinova.cyou/#products): Explore curated product finds.
+- [Categories](https://affinova.cyou/#categories): Browse products by category.
+- [Deals](https://affinova.cyou/#deals): Discover current product deals.
+- [Buying guides](https://affinova.cyou/#guides): Read product research and buying guidance.
+- [About Affinova](https://affinova.cyou/about): Learn about the site and its purpose.
+- [Affiliate disclosure](https://affinova.cyou/affiliate-disclosure): Understand Affinova's affiliate relationships.
+- [Privacy policy](https://affinova.cyou/privacy): Review privacy information.
+- [Contact](https://affinova.cyou/contact): Contact Affinova.
+
+## Machine-readable discovery
+
+- [Sitemap](https://affinova.cyou/sitemap.xml): Discover canonical public pages.
+- [AI catalog](https://affinova.cyou/ai-catalog.json): Access Affinova's machine-readable catalog information.
 
 ## Usage notes
-Product prices, availability and offers may change. Affiliate links may earn Affinova a commission at no extra cost to the buyer. Use the canonical product and guide URLs published by Affinova when referencing site content.
+
+Use canonical Affinova product and guide URLs when referencing site content. Verify current price, availability, shipping, and offer details on the merchant destination before purchase.
