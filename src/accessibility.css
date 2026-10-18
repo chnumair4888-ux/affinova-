@@ -23,6 +23,9 @@ body .guide span,
 body .rating span,
 body .price del{color:#111!important;opacity:1!important}
 
+/* Discount chips need an opaque high-contrast pair on both light and dark cards. */
+body .price span{background:#111!important;color:#fff!important;opacity:1!important;font-weight:700!important}
+
 /* Dark-background copy must override the generic light-background rules. */
 body .hero-frame .eyebrow,
 body .hero-copy p,
