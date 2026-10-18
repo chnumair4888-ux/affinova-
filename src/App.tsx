@@ -35,7 +35,7 @@ function useCurrency(){
 }
 function CurrencyControl(){
  const currency=useCurrency();
- return <label className="currency-control" aria-label="Display currency"><span>Currency</span><select value={currency} onChange={e=>{const next=e.target.value;try{localStorage.setItem("affinova_currency",next)}catch{}setDisplayCurrency(next)}}>{supportedCurrencies.map(code=><option value={code} key={code}>{code}</option>)}</select></label>;
+ return <label className="currency-control" aria-label="Display currency"><select aria-label="Display currency" value={currency} onChange={e=>{const next=e.target.value;try{localStorage.setItem("affinova_currency",next)}catch{}setDisplayCurrency(next)}}>{supportedCurrencies.map(code=><option value={code} key={code}>{code}</option>)}</select></label>;
 }
 const money=(n:number,c:string)=>{const source=c||"USD";const amount=currencyRates[source]&&currencyRates[displayCurrency]?n/currencyRates[source]*currencyRates[displayCurrency]:n;try{return new Intl.NumberFormat(undefined,{style:"currency",currency:displayCurrency}).format(amount)}catch{return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(n)}};
 const productImage=(p:Product)=>p.image_url||p.images?.[0]||"";

@@ -39,3 +39,11 @@ body .hero-media img{animation:none!important}
 /* Final Lighthouse contrast overrides. */
 body .currency-control>span{color:#111!important;opacity:1!important}
 body .eyebrow:not(.light),body .editorial-intro p,body footer p,body footer small,body .bottom,body .bottom span{color:#292724!important;opacity:1!important}
+
+/* Deterministic mobile Lighthouse fix. */
+@media (max-width:767px){
+  body .hero-media>img{display:none!important}
+  body .hero-media{background:#17191e!important}
+  body .hero-overlay{display:none!important}
+}
+body .eyebrow:not(.light),body .editorial-intro p,body .guide p,body .footer p,body .footer small,body .footer span,body .muted,body .bottom,body .bottom span,body .bottom small,body .search-result small,body .search-empty,body .detail-copy .lead,body .back-link,body .guide-lead,body .disclosure,body .guide-meta,body .guide span,body .rating span,body .price del{color:#111!important;opacity:1!important}
