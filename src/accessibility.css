@@ -1,10 +1,22 @@
 /* Storefront contrast overrides kept separate from the main stylesheet. */
-.top-strip span{opacity:.75}
-.editorial-intro p,.guide p,.footer p,.muted{color:#5f5b55}
-.guide span{color:#68635c}
-.rating span,.price del{color:#66615a}
-.bottom,.search-result small,.search-empty{color:#625e58}
-.detail-copy .lead,.back-link,.guide-lead,.disclosure,.guide-meta{color:#5f5b55}
+.top-strip span{opacity:.85}
 
-/* Preserve readable secondary text on dark storefront sections. */
-.dark-section .rating span,.dark-section .price del{color:#bdb9b1}
+/* Light-background secondary copy: meet WCAG AA contrast. */
+.eyebrow:not(.light),
+.editorial-intro p,
+.guide p,
+.footer p,
+.footer small,
+.footer span,
+.muted{color:#514e49}
+.guide span{color:#56524d}
+.rating span,.price del{color:#56524d}
+.bottom,.bottom span,.bottom small,.search-result small,.search-empty{color:#514e49}
+.detail-copy .lead,.back-link,.guide-lead,.disclosure,.guide-meta{color:#514e49}
+
+/* Dark-background secondary copy: keep enough contrast without changing layout. */
+.hero-frame .eyebrow,
+.hero-copy p,
+.dark-section .eyebrow,
+.dark-section .rating span,
+.dark-section .price del{color:#d2cec7}
