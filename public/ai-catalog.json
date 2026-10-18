@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "name": "Affinova",
+  "description": "Curated product discovery, deals, comparisons and buying guides.",
+  "url": "https://affinova.cyou/",
+  "sitemap": "https://affinova.cyou/sitemap.xml",
+  "resources": [
+    {"name": "Products", "url": "https://affinova.cyou/#products"},
+    {"name": "Categories", "url": "https://affinova.cyou/#categories"},
+    {"name": "Deals", "url": "https://affinova.cyou/#deals"},
+    {"name": "Buying Guides", "url": "https://affinova.cyou/#guides"},
+    {"name": "About", "url": "https://affinova.cyou/about"},
+    {"name": "Affiliate Disclosure", "url": "https://affinova.cyou/affiliate-disclosure"}
+  ]
+}
