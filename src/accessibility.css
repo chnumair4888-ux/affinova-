@@ -1,0 +1,10 @@
+/* Storefront contrast overrides kept separate from the main stylesheet. */
+.top-strip span{opacity:.75}
+.editorial-intro p,.guide p,.footer p,.muted{color:#5f5b55}
+.guide span{color:#68635c}
+.rating span,.price del{color:#66615a}
+.bottom,.search-result small,.search-empty{color:#625e58}
+.detail-copy .lead,.back-link,.guide-lead,.disclosure,.guide-meta{color:#5f5b55}
+
+/* Preserve readable secondary text on dark storefront sections. */
+.dark-section .rating span,.dark-section .price del{color:#bdb9b1}
