@@ -39,10 +39,8 @@ body .dark-section .guide-meta{color:#fff!important;opacity:1!important}
 /* Performance: do not delay the LCP paint with hero entrance animation. */
 body .hero-media img{animation:none!important}
 
-/* Deterministic mobile Lighthouse fixes. */
+/* Mobile: keep the real hero artwork visible while avoiding expensive motion. */
 @media (max-width:767px){
-  body .hero-media>img{display:none!important}
-  body .hero-media{background:#17191e!important}
-  body .hero-overlay{display:none!important}
+  body .hero-media>img{display:block!important;width:100%;height:100%;object-fit:cover}
   body .hero-media *,body .dark-section *,body .product-card *,body .editorial-card *{animation:none!important;transition:none!important}
 }
