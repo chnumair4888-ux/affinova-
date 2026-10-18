@@ -4,6 +4,7 @@ import App from "./App";
 import {ProductPage,GuidePage} from "./DetailPages";
 import {AboutPage,PrivacyPage,TermsPage,AffiliatePage,ContactPage,NotFoundPage} from "./LegalPages";
 import "./index.css";
+import "./accessibility.css";
 
 function Root(){
  const path=location.pathname;
