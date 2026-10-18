@@ -11,28 +11,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Stabilize hero image and reduce image weight
+      - name: Keep initial hero stable during page load
         shell: python
         run: |
           from pathlib import Path
           p=Path('src/App.tsx')
           s=p.read_text()
-          old='image:product?productImage(product):editorialImages[i]'
-          new='image:editorialImages[i]'
-          if old not in s:
-              raise SystemExit('Hero image expression not found')
-          s=s.replace(old,new,1)
-          s=s.replace('auto=format&fit=crop&w=1400&q=85','auto=format&fit=crop&w=900&q=72&fm=webp')
-          oldimg='<img key={slide.image} src={slide.image} alt={slide.name} width="1400" height="900" decoding="async" fetchPriority="high"/>'
-          newimg='<img key={slide.image} src={slide.image} alt={slide.name} width="1400" height="900" loading="eager" decoding="async" fetchPriority="high"/>'
-          if oldimg not in s:
-              raise SystemExit('Hero img tag not found')
-          s=s.replace(oldimg,newimg,1)
+          old='useEffect(()=>{const id=window.setInterval(()=>setIndex(i=>(i+1)%slides.length),5000);return()=>window.clearInterval(id)},[slides.length]);'
+          if old in s:
+              s=s.replace(old,'',1)
+          else:
+              print('Auto-rotation already removed')
           p.write_text(s)
+
+          css=Path('src/accessibility.css')
+          c=css.read_text()
+          extra='''\n/* Performance: do not delay the LCP paint with hero entrance animation. */\nbody .hero-media img{animation:none!important}\n\n/* Final Lighthouse contrast overrides. */\nbody .currency-control>span{color:#111!important;opacity:1!important}\nbody .eyebrow:not(.light),body .editorial-intro p,body footer p,body footer small,body .bottom,body .bottom span{color:#292724!important;opacity:1!important}\n'''
+          if 'Final Lighthouse contrast overrides.' not in c:
+              c += extra
+          css.write_text(c)
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/App.tsx
-          git commit -m "Stabilize hero image for faster mobile LCP" || exit 0
+          git add src/App.tsx src/accessibility.css
+          git commit -m "Keep hero stable for LCP and strengthen contrast" || exit 0
           git push
