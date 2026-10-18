@@ -1,0 +1,41 @@
+name: Optimize storefront images
+on:
+  push:
+    paths:
+      - '.github/workflows/optimize-images.yml'
+permissions:
+  contents: write
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Optimize image loading
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          files=['src/App.tsx','src/DetailPages.tsx']
+          for name in files:
+              p=Path(name)
+              s=p.read_text()
+              # Product/card/search/guide images below the initial viewport should lazy-load.
+              s=s.replace('<img src={img} alt={p.title}/>', '<img src={img} alt={p.title} loading="lazy" decoding="async"/>')
+              s=s.replace('<img src={productImage(p)||editorialImages[0]} alt={p.title}/>', '<img src={productImage(p)||editorialImages[0]} alt={p.title} loading="lazy" decoding="async"/>')
+              s=s.replace('<img className="guide-hero-image" src={g.cover_image} alt={g.title+" cover image"}/>', '<img className="guide-hero-image" src={g.cover_image} alt={g.title+" cover image"} decoding="async" fetchPriority="high"/>')
+              # Product detail hero is the likely LCP image: decode async and prioritize it rather than lazy-loading.
+              s=s.replace('<div className="detail-image"><img src={image(p)} alt={p.title}/></div>', '<div className="detail-image"><img src={image(p)} alt={p.title} decoding="async" fetchPriority="high"/></div>')
+              # Hero carousel is above the fold and should be prioritized; dimensions reduce layout shift.
+              s=s.replace('<img key={slide.image} src={slide.image} alt={slide.name}/>', '<img key={slide.image} src={slide.image} alt={slide.name} width="1400" height="900" decoding="async" fetchPriority="high"/>')
+              p.write_text(s)
+          PY
+      - name: Commit optimization
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/App.tsx src/DetailPages.tsx
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Optimize storefront image loading performance"
+          git push
