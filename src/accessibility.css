@@ -32,3 +32,10 @@ body .hero-copy p,
 body .dark-section .eyebrow,
 body .dark-section .rating span,
 body .dark-section .price del{color:#dedad3}
+
+/* Performance: do not delay the LCP paint with hero entrance animation. */
+body .hero-media img{animation:none!important}
+
+/* Final Lighthouse contrast overrides. */
+body .currency-control>span{color:#111!important;opacity:1!important}
+body .eyebrow:not(.light),body .editorial-intro p,body footer p,body footer small,body .bottom,body .bottom span{color:#292724!important;opacity:1!important}
