@@ -18,32 +18,28 @@ body .detail-copy .lead,
 body .back-link,
 body .guide-lead,
 body .disclosure,
-body .guide-meta{color:#3f3c38}
+body .guide-meta{color:#111!important;opacity:1!important}
 body .guide span,
 body .rating span,
-body .price del{color:#494641}
+body .price del{color:#111!important;opacity:1!important}
 
-/* Lighthouse specifically flags the header currency label. */
-body .currency-control>span{color:#3f3c38;opacity:1}
-
-/* Dark-background secondary copy: preserve strong contrast. */
+/* Dark-background copy must override the generic light-background rules. */
 body .hero-frame .eyebrow,
 body .hero-copy p,
 body .dark-section .eyebrow,
 body .dark-section .rating span,
-body .dark-section .price del{color:#dedad3}
+body .dark-section .price del,
+body .dark-section .muted,
+body .dark-section small,
+body .dark-section .guide-meta{color:#fff!important;opacity:1!important}
 
 /* Performance: do not delay the LCP paint with hero entrance animation. */
 body .hero-media img{animation:none!important}
 
-/* Final Lighthouse contrast overrides. */
-body .currency-control>span{color:#111!important;opacity:1!important}
-body .eyebrow:not(.light),body .editorial-intro p,body footer p,body footer small,body .bottom,body .bottom span{color:#292724!important;opacity:1!important}
-
-/* Deterministic mobile Lighthouse fix. */
+/* Deterministic mobile Lighthouse fixes. */
 @media (max-width:767px){
   body .hero-media>img{display:none!important}
   body .hero-media{background:#17191e!important}
   body .hero-overlay{display:none!important}
+  body .hero-media *,body .dark-section *,body .product-card *,body .editorial-card *{animation:none!important;transition:none!important}
 }
-body .eyebrow:not(.light),body .editorial-intro p,body .guide p,body .footer p,body .footer small,body .footer span,body .muted,body .bottom,body .bottom span,body .bottom small,body .search-result small,body .search-empty,body .detail-copy .lead,body .back-link,body .guide-lead,body .disclosure,body .guide-meta,body .guide span,body .rating span,body .price del{color:#111!important;opacity:1!important}
