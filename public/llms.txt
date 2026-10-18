@@ -1,0 +1,21 @@
+# Affinova
+
+> Affinova is a product discovery and buying-guide website featuring curated products, comparisons, deals and affiliate links.
+
+## Main sections
+- Homepage: https://affinova.cyou/
+- Products: https://affinova.cyou/#products
+- Categories: https://affinova.cyou/#categories
+- Deals: https://affinova.cyou/#deals
+- Guides: https://affinova.cyou/#guides
+- About: https://affinova.cyou/about
+- Affiliate disclosure: https://affinova.cyou/affiliate-disclosure
+- Privacy: https://affinova.cyou/privacy
+- Contact: https://affinova.cyou/contact
+
+## Discovery
+- Sitemap: https://affinova.cyou/sitemap.xml
+- AI catalog: https://affinova.cyou/ai-catalog.json
+
+## Usage notes
+Product prices, availability and offers may change. Affiliate links may earn Affinova a commission at no extra cost to the buyer. Use the canonical product and guide URLs published by Affinova when referencing site content.
