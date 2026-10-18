@@ -1,22 +1,34 @@
 /* Storefront contrast overrides kept separate from the main stylesheet. */
-.top-strip span{opacity:.85}
+.top-strip span{opacity:.9}
 
-/* Light-background secondary copy: meet WCAG AA contrast. */
-.eyebrow:not(.light),
-.editorial-intro p,
-.guide p,
-.footer p,
-.footer small,
-.footer span,
-.muted{color:#514e49}
-.guide span{color:#56524d}
-.rating span,.price del{color:#56524d}
-.bottom,.bottom span,.bottom small,.search-result small,.search-empty{color:#514e49}
-.detail-copy .lead,.back-link,.guide-lead,.disclosure,.guide-meta{color:#514e49}
+/* Light-background secondary copy: stronger WCAG AA contrast. */
+body .eyebrow:not(.light),
+body .editorial-intro p,
+body .guide p,
+body .footer p,
+body .footer small,
+body .footer span,
+body .muted,
+body .bottom,
+body .bottom span,
+body .bottom small,
+body .search-result small,
+body .search-empty,
+body .detail-copy .lead,
+body .back-link,
+body .guide-lead,
+body .disclosure,
+body .guide-meta{color:#3f3c38}
+body .guide span,
+body .rating span,
+body .price del{color:#494641}
 
-/* Dark-background secondary copy: keep enough contrast without changing layout. */
-.hero-frame .eyebrow,
-.hero-copy p,
-.dark-section .eyebrow,
-.dark-section .rating span,
-.dark-section .price del{color:#d2cec7}
+/* Lighthouse specifically flags the header currency label. */
+body .currency-control>span{color:#3f3c38;opacity:1}
+
+/* Dark-background secondary copy: preserve strong contrast. */
+body .hero-frame .eyebrow,
+body .hero-copy p,
+body .dark-section .eyebrow,
+body .dark-section .rating span,
+body .dark-section .price del{color:#dedad3}
