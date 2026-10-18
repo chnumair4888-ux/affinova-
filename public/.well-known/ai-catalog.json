@@ -1,0 +1,23 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Affinova",
+    "identifier": "did:web:affinova.cyou",
+    "documentationUrl": "https://affinova.cyou/llms.txt"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:affinova.cyou:web:storefront",
+      "displayName": "Affinova Product Discovery",
+      "type": "text/html",
+      "url": "https://affinova.cyou/",
+      "description": "Curated product discovery, deals, comparisons and buying guides.",
+      "tags": ["products", "shopping", "deals", "buying-guides"],
+      "representativeQueries": [
+        "find useful products on Affinova",
+        "show Affinova product deals and buying guides"
+      ],
+      "version": "1.0.0"
+    }
+  ]
+}
